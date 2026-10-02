@@ -1,0 +1,37 @@
+:root { --bg:#f5f5f3; --fg:#1a1a1a; --muted:#6b6b6b; --accent:#e85d0c; --card:#fff; --line:#e2e2de; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#161616; --fg:#f0f0ee; --muted:#9a9a96; --card:#222; --line:#333; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg); font-family: system-ui, "Noto Sans KR", sans-serif; }
+header, footer { padding: 24px 16px; max-width: 1200px; margin: 0 auto; }
+header h1 { margin:0 0 4px; }
+header p, .hint, footer { color: var(--muted); font-size: .9rem; }
+main { display:grid; grid-template-columns: 320px 1fr; gap:24px; max-width:1200px; margin:0 auto; padding:0 16px; }
+@media (max-width: 800px) { main { grid-template-columns: 1fr; } }
+#panel { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; align-self:start; }
+#panel h2 { font-size:.85rem; letter-spacing:.04em; color:var(--accent); margin:16px 0 8px; }
+#panel h2:first-child { margin-top:0; }
+#sketches { display:grid; grid-template-columns: 1fr 1fr; gap:8px; }
+.thumb { display:block; border:2px solid var(--line); border-radius:8px; padding:4px; cursor:pointer; font-size:.8rem; position:relative; }
+.thumb:has(input:checked) { border-color:var(--accent); }
+.thumb input { position:absolute; opacity:0; }
+.thumb img { width:100%; aspect-ratio:4/3; object-fit:contain; background:#fff; border-radius:4px; }
+#materials label { display:block; padding:4px 0; }
+textarea, #server { width:100%; padding:8px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--fg); font:inherit; }
+button, #dl { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:10px 16px; font:inherit; cursor:pointer; text-decoration:none; display:inline-block; }
+button:disabled { opacity:.5; cursor:default; }
+#go { width:100%; margin-top:12px; }
+.upload { display:block; margin-top:8px; font-size:.8rem; color:var(--muted); }
+#toolbar { min-height:40px; margin-bottom:8px; }
+#gallery { display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:12px; }
+.card { margin:0; background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+.card img { display:block; width:100%; aspect-ratio:4/3; object-fit:cover; cursor:zoom-in; }
+.card .msg { aspect-ratio:4/3; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:var(--muted); text-align:center; padding:8px; }
+.card figcaption { padding:8px 12px; font-size:.9rem; }
+.spin { width:20px; height:20px; border:3px solid var(--line); border-top-color:var(--accent); border-radius:50%; animation:s 1s linear infinite; }
+@keyframes s { to { transform:rotate(360deg); } }
+dialog { border:0; border-radius:12px; padding:12px; max-width:90vw; background:var(--card); color:var(--fg); }
+dialog::backdrop { background:rgba(0,0,0,.7); }
+dialog img { max-width:85vw; max-height:75vh; display:block; margin:0 auto 8px; }
+dialog form { text-align:center; }
