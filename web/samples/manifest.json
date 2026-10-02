@@ -1,0 +1,46 @@
+{
+ "materials": [
+  {
+   "id": "concrete",
+   "label": "노출 콘크리트"
+  },
+  {
+   "id": "brick",
+   "label": "적벽돌 파사드"
+  },
+  {
+   "id": "glass",
+   "label": "통유리 커튼월"
+  },
+  {
+   "id": "wood",
+   "label": "우드 루버"
+  }
+ ],
+ "sketches": [
+  {
+   "id": "modern",
+   "label": "현대식 박스",
+   "src": "samples/modern/sketch.jpg"
+  },
+  {
+   "id": "villa_elev",
+   "label": "빌라 입면",
+   "src": "samples/villa_elev/sketch.jpg"
+  }
+ ],
+ "renders": {
+  "modern": {
+   "concrete": "samples/modern/concrete.jpg",
+   "brick": "samples/modern/brick.jpg",
+   "glass": "samples/modern/glass.jpg",
+   "wood": "samples/modern/wood.jpg"
+  },
+  "villa_elev": {
+   "concrete": "samples/villa_elev/concrete.jpg",
+   "brick": "samples/villa_elev/brick.jpg",
+   "glass": "samples/villa_elev/glass.jpg",
+   "wood": "samples/villa_elev/wood.jpg"
+  }
+ }
+}
