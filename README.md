@@ -2,7 +2,7 @@
 
 Upload an architectural sketch, pick materials, get a gallery of facade renders to compare.
 
-**Demo:** (deployed URL goes here)
+**Status:** working demo mode, run locally (see below). Not deployed. Live mode is unverified.
 
 ## How it works
 - **Demo mode (public site):** pick a sample sketch + materials and the page shows renders generated offline with SDXL + ControlNet (Canny, `CONTROL_SCALE=0.55`). It needs no server and costs nothing to host.
