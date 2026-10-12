@@ -1,0 +1,261 @@
+{
+  "version": 1,
+  "id": "grid",
+  "label": "그리드 창",
+  "size": {
+    "w": "params.bays * 3.6",
+    "h": "params.floors * params.floorHeight + params.parapet"
+  },
+  "params": [
+    {
+      "key": "floors",
+      "label": "층수",
+      "type": "int",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "key": "bays",
+      "label": "베이 수",
+      "type": "int",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "key": "windowRatio",
+      "label": "창 비율",
+      "type": "float",
+      "min": 0.3,
+      "max": 0.9,
+      "step": 0.05,
+      "default": 0.6
+    },
+    {
+      "key": "floorHeight",
+      "label": "층고 (m)",
+      "type": "float",
+      "min": 2.8,
+      "max": 4.5,
+      "step": 0.1,
+      "default": 3.4
+    },
+    {
+      "key": "rhythm",
+      "label": "리듬",
+      "type": "enum",
+      "default": "regular",
+      "options": [
+        {
+          "value": "regular",
+          "label": "규칙"
+        },
+        {
+          "value": "alternate",
+          "label": "교차"
+        },
+        {
+          "value": "group",
+          "label": "그룹"
+        },
+        {
+          "value": "random",
+          "label": "랜덤"
+        }
+      ]
+    },
+    {
+      "key": "seed",
+      "label": "시드",
+      "type": "int",
+      "min": 0,
+      "max": 9999,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "key": "storefront",
+      "label": "1층 상가",
+      "type": "bool",
+      "default": true
+    },
+    {
+      "key": "parapet",
+      "label": "파라펫 높이 (m)",
+      "type": "float",
+      "min": 0,
+      "max": 1.2,
+      "step": 0.1,
+      "default": 0.6
+    }
+  ],
+  "axiom": "Facade",
+  "rules": {
+    "Facade": [
+      {
+        "op": "split",
+        "axis": "y",
+        "parts": [
+          {
+            "size": "params.floors * params.floorHeight",
+            "sym": "Body"
+          },
+          {
+            "size": "~",
+            "sym": "Parapet"
+          }
+        ]
+      }
+    ],
+    "Body": [
+      {
+        "op": "repeat",
+        "axis": "y",
+        "size": "params.floorHeight",
+        "sym": "Floor"
+      }
+    ],
+    "Floor": [
+      {
+        "when": "params.storefront && index == 0",
+        "op": "repeat",
+        "axis": "x",
+        "size": 3.6,
+        "sym": "ShopBay"
+      },
+      {
+        "op": "repeat",
+        "axis": "x",
+        "size": 3.6,
+        "pattern": "params.pattern",
+        "map": {
+          "A": "BayA",
+          "B": "BayB"
+        }
+      }
+    ],
+    "Parapet": [
+      {
+        "op": "emit",
+        "mat": "secondary",
+        "role": "parapet",
+        "depth": 0.4
+      }
+    ],
+    "BayA": [
+      {
+        "op": "inset",
+        "l": "shape.w * (1 - params.windowRatio) / 2",
+        "r": "shape.w * (1 - params.windowRatio) / 2",
+        "b": "shape.h * (1 - params.windowRatio) * 0.6",
+        "t": "shape.h * (1 - params.windowRatio) * 0.4",
+        "inner": "Win",
+        "frame": "WallPiece"
+      }
+    ],
+    "BayB": [
+      {
+        "op": "emit",
+        "mat": "secondary",
+        "role": "panel",
+        "depth": 0.3
+      }
+    ],
+    "WallPiece": [
+      {
+        "op": "emit",
+        "mat": "primary",
+        "role": "wall",
+        "depth": 0.3
+      }
+    ],
+    "Win": [
+      {
+        "op": "inset",
+        "l": 0.06,
+        "r": 0.06,
+        "t": 0.06,
+        "b": 0.06,
+        "inner": "Glass",
+        "frame": "FramePiece"
+      }
+    ],
+    "FramePiece": [
+      {
+        "op": "emit",
+        "mat": "frame",
+        "role": "frame",
+        "depth": 0.1,
+        "offset": 0.1
+      }
+    ],
+    "Glass": [
+      {
+        "op": "emit",
+        "mat": "glass",
+        "role": "window",
+        "depth": 0.02,
+        "offset": 0.12
+      }
+    ],
+    "ShopBay": [
+      {
+        "op": "inset",
+        "l": 0.2,
+        "r": 0.2,
+        "t": 0.5,
+        "b": 0.1,
+        "inner": "ShopGlass",
+        "frame": "ShopFrame"
+      }
+    ],
+    "ShopFrame": [
+      {
+        "op": "emit",
+        "mat": "frame",
+        "role": "frame",
+        "depth": 0.3
+      }
+    ],
+    "ShopGlass": [
+      {
+        "op": "emit",
+        "mat": "glass",
+        "role": "window",
+        "depth": 0.02,
+        "offset": 0.1
+      }
+    ]
+  },
+  "presets": [
+    {
+      "label": "5층 규칙형",
+      "values": {
+        "floors": 5,
+        "bays": 6,
+        "windowRatio": 0.6,
+        "floorHeight": 3.4,
+        "rhythm": "regular",
+        "seed": 1,
+        "storefront": true,
+        "parapet": 0.6
+      }
+    },
+    {
+      "label": "8층 교차 리듬",
+      "values": {
+        "floors": 8,
+        "bays": 8,
+        "windowRatio": 0.5,
+        "floorHeight": 3.2,
+        "rhythm": "alternate",
+        "seed": 3,
+        "storefront": false,
+        "parapet": 0.9
+      }
+    }
+  ]
+}
