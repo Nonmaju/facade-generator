@@ -48,7 +48,7 @@ tests/grammar/*.test.mjs
 ## Grammar
 Rule set: `{ version: 1, axiom, rules: { Symbol: [{ when?, op, ...args }] } }`; the first rule whose `when` is true wins. Recursion depth cap 32.
 
-Ops (only these six; a new op is added only if two types need it): `split` (axis, parts), `repeat` (axis, size, symbol or pattern+map), `inset` (l,r,t,b, inner, frame), `extrude` (depth, offset; negative offset = recess), `emit` (mat, role), `nil` (a hole).
+Ops (only these five; a new op is added only if two types need it): `split` (axis, parts), `repeat` (axis, size, symbol or pattern+map), `inset` (l,r,t,b, inner, frame), `emit` (mat, role, depth, offset: the terminal; `offset` is the z start, so a recess is just a smaller offset), `nil` (a hole). See the clarifications section: `extrude` was folded into `emit`.
 
 Sizes: absolute expression, `{r:n}` relative, or `"~"` fill-remainder. If absolutes exceed the parent they are scaled down proportionally (the single overflow rule). `repeat` fits `floor(len/size)` tiles and stretches them to fill exactly. Rhythm = cyclic `pattern` string indexed by `index % length` with a letter->symbol `map`.
 
@@ -87,7 +87,7 @@ Rough schedule 3-5 weeks (unmeasured estimate).
 Automated (`node --test`, pure):
 - Tiling: children of every split/repeat sum to the parent within 1e-6 and stay inside it.
 - No overlaps among coplanar terminals of the same layer (O(n^2) is fine at test sizes).
-- Count invariants: grid windows = floors x bays (minus storefront); mullions = bays x divisions + 1.
+- Count invariants: grid windows = number of `A` bays per floor summed over floors (the storefront floor is all glass); curtain wall glass cells = floors x bays x divisions with 2 mullion strips per cell; louvers = open bays x louvers per floor.
 - Determinism: same params+seed deep-equal; a different seed changes only `rand`-dependent fields.
 - Stability: changing `floors` does not change ground-floor terminal paths.
 - Expression parser: case table; rejects `constructor`, `__proto__`, unknown identifiers.
@@ -109,3 +109,14 @@ Sketch input (OpenCV.js), rule editor (C), demo video, live-mode UI, deployment,
 
 ## Credits
 Textures: ambientCG (CC0), listed per material in README at implementation time. Existing: `villa_elev` is a crop of Rijksmuseum RP-T-1966-65-1 (CC0); `modern` is drawn by the author.
+
+## Implementation clarifications (2026-10-12, found while writing the plan; these override the text above)
+- **Five ops, not six.** `extrude` is folded into `emit` (a state-setting `extrude` had no use in the three types).
+- **Type file has a `size` field** `{w, h}` of expressions (facade width/height in meters, e.g. `params.bays * 3.6`). Grid height includes the parapet.
+- **Param types** are `int | float | enum | bool`. The rhythm is an `enum` param; the engine derives `params.pattern` (the letter string) from `rhythm`, `bays` and `seed`.
+- **One size rule for `split`:** absolutes, `{r: n}` relative and `"~"` fill. If absolutes overflow, or nothing is flexible, absolutes are scaled proportionally so children always tile the parent exactly.
+- **No wall slab.** The wall is the bay minus the window opening (four ring pieces), so all terminals tile the facade plane exactly and no two terminals overlap in 3D. Tests assert both (area sum equals facade area; no positive-volume intersections).
+- **`windowRatio`** is the linear fraction of a bay's width and height that is opening (grid, louver) or the vision-glass height share of a floor (curtain wall).
+- **Curtain-wall mullions** are drawn as two adjacent strips per glass cell, so the invariant is 2 strips per cell.
+- **Slots:** `primary` and `secondary` are the swappable finishes; `glass` and `frame` are fixed per type.
+- **Plan is split.** Part 1 covers the engine, three types, textures, 3D view and the UI mockup gate. Part 2 (real UI, gallery tab, README, final checks) is written after a mockup is approved.
