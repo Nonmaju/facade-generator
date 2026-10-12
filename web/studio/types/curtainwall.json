@@ -1,0 +1,206 @@
+{
+  "version": 1,
+  "id": "curtainwall",
+  "label": "커튼월",
+  "size": {
+    "w": "params.bays * 3.6",
+    "h": "params.floors * params.floorHeight"
+  },
+  "params": [
+    {
+      "key": "floors",
+      "label": "층수",
+      "type": "int",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "key": "bays",
+      "label": "베이 수",
+      "type": "int",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "key": "windowRatio",
+      "label": "창 비율",
+      "type": "float",
+      "min": 0.3,
+      "max": 0.9,
+      "step": 0.05,
+      "default": 0.6
+    },
+    {
+      "key": "floorHeight",
+      "label": "층고 (m)",
+      "type": "float",
+      "min": 2.8,
+      "max": 4.5,
+      "step": 0.1,
+      "default": 3.8
+    },
+    {
+      "key": "rhythm",
+      "label": "리듬",
+      "type": "enum",
+      "default": "regular",
+      "options": [
+        {
+          "value": "regular",
+          "label": "규칙"
+        },
+        {
+          "value": "alternate",
+          "label": "교차"
+        },
+        {
+          "value": "group",
+          "label": "그룹"
+        },
+        {
+          "value": "random",
+          "label": "랜덤"
+        }
+      ]
+    },
+    {
+      "key": "seed",
+      "label": "시드",
+      "type": "int",
+      "min": 0,
+      "max": 9999,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "key": "divisions",
+      "label": "베이당 멀리언 분할",
+      "type": "int",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2
+    }
+  ],
+  "axiom": "Facade",
+  "rules": {
+    "Facade": [
+      {
+        "op": "repeat",
+        "axis": "y",
+        "size": "params.floorHeight",
+        "sym": "CFloor"
+      }
+    ],
+    "CFloor": [
+      {
+        "op": "split",
+        "axis": "y",
+        "parts": [
+          {
+            "size": "shape.h * (1 - params.windowRatio)",
+            "sym": "Spandrel"
+          },
+          {
+            "size": "~",
+            "sym": "Vision"
+          }
+        ]
+      }
+    ],
+    "Spandrel": [
+      {
+        "op": "repeat",
+        "axis": "x",
+        "size": "3.6 / params.divisions",
+        "pattern": "params.pattern",
+        "map": {
+          "A": "SpanA",
+          "B": "SpanB"
+        }
+      }
+    ],
+    "SpanA": [
+      {
+        "op": "emit",
+        "mat": "secondary",
+        "role": "spandrel",
+        "depth": 0.08,
+        "offset": 0.04
+      }
+    ],
+    "SpanB": [
+      {
+        "op": "emit",
+        "mat": "primary",
+        "role": "spandrel",
+        "depth": 0.08,
+        "offset": 0.04
+      }
+    ],
+    "Vision": [
+      {
+        "op": "repeat",
+        "axis": "x",
+        "size": "3.6 / params.divisions",
+        "sym": "VCell"
+      }
+    ],
+    "VCell": [
+      {
+        "op": "inset",
+        "l": 0.03,
+        "r": 0.03,
+        "inner": "VGlass",
+        "frame": "Mullion"
+      }
+    ],
+    "VGlass": [
+      {
+        "op": "emit",
+        "mat": "glass",
+        "role": "window",
+        "depth": 0.02,
+        "offset": 0.1
+      }
+    ],
+    "Mullion": [
+      {
+        "op": "emit",
+        "mat": "frame",
+        "role": "mullion",
+        "depth": 0.16
+      }
+    ]
+  },
+  "presets": [
+    {
+      "label": "오피스 타워",
+      "values": {
+        "floors": 10,
+        "bays": 6,
+        "windowRatio": 0.65,
+        "floorHeight": 3.8,
+        "rhythm": "regular",
+        "seed": 1,
+        "divisions": 2
+      }
+    },
+    {
+      "label": "세밀한 멀리언",
+      "values": {
+        "floors": 6,
+        "bays": 8,
+        "windowRatio": 0.75,
+        "floorHeight": 3.6,
+        "rhythm": "group",
+        "seed": 2,
+        "divisions": 3
+      }
+    }
+  ]
+}
