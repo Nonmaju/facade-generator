@@ -1,0 +1,218 @@
+{
+  "version": 1,
+  "id": "louver",
+  "label": "루버 / 조적",
+  "size": {
+    "w": "params.bays * 3.6",
+    "h": "params.floors * params.floorHeight"
+  },
+  "params": [
+    {
+      "key": "floors",
+      "label": "층수",
+      "type": "int",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "key": "bays",
+      "label": "베이 수",
+      "type": "int",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "key": "windowRatio",
+      "label": "창 비율",
+      "type": "float",
+      "min": 0.3,
+      "max": 0.9,
+      "step": 0.05,
+      "default": 0.6
+    },
+    {
+      "key": "floorHeight",
+      "label": "층고 (m)",
+      "type": "float",
+      "min": 2.8,
+      "max": 4.5,
+      "step": 0.1,
+      "default": 3.6
+    },
+    {
+      "key": "rhythm",
+      "label": "리듬",
+      "type": "enum",
+      "default": "regular",
+      "options": [
+        {
+          "value": "regular",
+          "label": "규칙"
+        },
+        {
+          "value": "alternate",
+          "label": "교차"
+        },
+        {
+          "value": "group",
+          "label": "그룹"
+        },
+        {
+          "value": "random",
+          "label": "랜덤"
+        }
+      ]
+    },
+    {
+      "key": "seed",
+      "label": "시드",
+      "type": "int",
+      "min": 0,
+      "max": 9999,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "key": "louvers",
+      "label": "층당 루버 개수",
+      "type": "int",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "key": "louverDepth",
+      "label": "루버 돌출 (m)",
+      "type": "float",
+      "min": 0.05,
+      "max": 0.4,
+      "step": 0.05,
+      "default": 0.2
+    }
+  ],
+  "axiom": "Facade",
+  "rules": {
+    "Facade": [
+      {
+        "op": "repeat",
+        "axis": "y",
+        "size": "params.floorHeight",
+        "sym": "LFloor"
+      }
+    ],
+    "LFloor": [
+      {
+        "op": "repeat",
+        "axis": "x",
+        "size": 3.6,
+        "pattern": "params.pattern",
+        "map": {
+          "A": "LBayA",
+          "B": "LBayB"
+        }
+      }
+    ],
+    "LBayA": [
+      {
+        "op": "inset",
+        "l": "shape.w * (1 - params.windowRatio) / 2",
+        "r": "shape.w * (1 - params.windowRatio) / 2",
+        "b": "shape.h * (1 - params.windowRatio) * 0.6",
+        "t": "shape.h * (1 - params.windowRatio) * 0.4",
+        "inner": "LOpen",
+        "frame": "WallPiece"
+      }
+    ],
+    "LBayB": [
+      {
+        "op": "emit",
+        "mat": "secondary",
+        "role": "panel",
+        "depth": 0.3
+      }
+    ],
+    "WallPiece": [
+      {
+        "op": "emit",
+        "mat": "primary",
+        "role": "wall",
+        "depth": 0.3
+      }
+    ],
+    "LOpen": [
+      {
+        "op": "repeat",
+        "axis": "y",
+        "size": "shape.h / params.louvers",
+        "sym": "LCell"
+      }
+    ],
+    "LCell": [
+      {
+        "op": "split",
+        "axis": "y",
+        "parts": [
+          {
+            "size": "shape.h * 0.6",
+            "sym": "LGap"
+          },
+          {
+            "size": "~",
+            "sym": "Louver"
+          }
+        ]
+      }
+    ],
+    "LGap": [
+      {
+        "op": "emit",
+        "mat": "glass",
+        "role": "window",
+        "depth": 0.02,
+        "offset": 0.1
+      }
+    ],
+    "Louver": [
+      {
+        "op": "emit",
+        "mat": "secondary",
+        "role": "louver",
+        "depth": "0.15 + params.louverDepth",
+        "offset": 0.15
+      }
+    ]
+  },
+  "presets": [
+    {
+      "label": "루버 스크린",
+      "values": {
+        "floors": 4,
+        "bays": 6,
+        "windowRatio": 0.7,
+        "floorHeight": 3.6,
+        "rhythm": "regular",
+        "seed": 1,
+        "louvers": 6,
+        "louverDepth": 0.2
+      }
+    },
+    {
+      "label": "불규칙 조적",
+      "values": {
+        "floors": 5,
+        "bays": 7,
+        "windowRatio": 0.6,
+        "floorHeight": 3.4,
+        "rhythm": "random",
+        "seed": 7,
+        "louvers": 8,
+        "louverDepth": 0.3
+      }
+    }
+  ]
+}
