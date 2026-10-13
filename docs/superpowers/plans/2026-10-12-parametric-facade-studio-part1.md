@@ -2951,4 +2951,6 @@ Written as its own plan once the mockup is approved. Expected content:
 3. Gallery tab: move the existing demo-gallery code under `web/gallery/` (demo mode only, no live-mode UI; keep `queue.js`, `render.js`, `server/` as code); keep the old tests passing.
 4. README rewrite: the "GPU constraint to browser pivot" story, how to run and test, texture credits (ambientCG ids from `web/textures/CREDITS.md`), existing sketch credits, honest status line.
 5. Final checks: full `npm test`, the browser checklist on the real page (presets, sliders, 6 finishes, tab switch, console errors 0, phone width), unrun items reported plainly.
-6. Out of scope until the user says so: deploying / enabling Pages, renaming the repo.
+6. Decide the seed/random behavior with the user at the mockup gate (review finding): today the seed only matters when rhythm is `random` (1 of 6 presets), so the seed slider and the 랜덤 button look broken elsewhere. Options: the 랜덤 button also switches rhythm to random; hide the seed slider unless rhythm is random; or add `rand()` variation to the types. Brief the mockup with this.
+7. Deferred minors from the Part 1 review (do before the rule editor, not before launch): hasOwn/forbidden-key checks in the engine, finite guards for inset margins and root size, a MAX_TERMINALS cap, a validator that never throws, golden test failing when `golden.json` is missing, scene teardown, safer screenshot download.
+8. Out of scope until the user says so: deploying / enabling Pages, renaming the repo.

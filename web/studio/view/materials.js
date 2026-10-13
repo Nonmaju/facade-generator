@@ -10,13 +10,13 @@ const frame = new THREE.MeshStandardMaterial({ color: 0x2b2f33, metalness: 0.8, 
 
 /**
  * Instanced unit boxes have stretched UVs. Replace them with world-space planar UVs
- * (projection plane chosen by the dominant normal axis) so one texture repeat = `tile` meters.
+ * (projection plane chosen by the dominant normal axis) so one texture repeat = `tile` = [u, v] meters.
  */
 function useWorldUv(material, tile) {
   material.onBeforeCompile = (shader) => {
-    shader.uniforms.uTile = { value: tile };
+    shader.uniforms.uTile = { value: new THREE.Vector2(tile[0], tile[1]) };
     shader.vertexShader = shader.vertexShader
-      .replace("#include <common>", "#include <common>\nuniform float uTile;")
+      .replace("#include <common>", "#include <common>\nuniform vec2 uTile;")
       .replace(
         "#include <uv_vertex>",
         `#include <uv_vertex>

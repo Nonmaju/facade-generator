@@ -9,7 +9,29 @@ const assets = JSON.parse(readFileSync(new URL("../tools/textures.json", import.
 test("catalog has the 6 finishes and valid defaults", () => {
   assert.deepEqual(MATERIAL_CATALOG.map((m) => m.id).sort(), ["brick", "concrete", "metal", "plaster", "stone", "wood"]);
   for (const id of Object.values(DEFAULT_FINISH)) assert.ok(MATERIAL_CATALOG.some((m) => m.id === id));
-  for (const m of MATERIAL_CATALOG) assert.ok(m.tile > 0 && Number.isInteger(m.fallback));
+  for (const m of MATERIAL_CATALOG) {
+    assert.ok(Array.isArray(m.tile) && m.tile.length === 2 && m.tile.every((v) => v > 0), `${m.id}.tile must be [u, v] meters`);
+    assert.ok(Number.isInteger(m.fallback));
+  }
+});
+
+// Width x height of a JPEG, from its SOF marker.
+function jpegSize(buf) {
+  let i = 2;
+  while (i < buf.length) {
+    const marker = buf[i + 1];
+    const len = buf.readUInt16BE(i + 2);
+    if (marker >= 0xc0 && marker <= 0xc3) return { w: buf.readUInt16BE(i + 7), h: buf.readUInt16BE(i + 5) };
+    i += 2 + len;
+  }
+  throw new Error("no SOF marker");
+}
+
+test("each finish's tile [u, v] has the same aspect as its texture, so nothing is stretched", () => {
+  for (const m of MATERIAL_CATALOG) {
+    const { w, h } = jpegSize(readFileSync(web(`textures/${m.id}/color.jpg`)));
+    assert.ok(Math.abs(m.tile[0] / m.tile[1] - w / h) < 0.01, `${m.id}: tile ${m.tile} vs image ${w}x${h}`);
+  }
 });
 
 test("every finish has color/normal/rough JPGs of a sane size", () => {
