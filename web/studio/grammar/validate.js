@@ -44,6 +44,13 @@ export function validateType(def) {
       if (!Array.isArray(p.options) || !p.options.length) bad(at, "options required");
       else if (!p.options.some((o) => o.value === p.default)) bad(at, "default must be one of the options");
     } else if (typeof p.default !== "boolean") bad(at, "bool default must be true/false");
+    if (p.showWhen !== undefined) {
+      const w = p.showWhen;
+      const target = params.find((q) => q.key === w?.key);
+      const okEquals = target?.type === "enum" ? target.options?.some((o) => o.value === w.equals) : target?.type === "bool" ? typeof w.equals === "boolean" : false;
+      if (!target || target.key === p.key) bad(`${at}.showWhen`, "key must name another param");
+      else if (!okEquals) bad(`${at}.showWhen`, "target must be an enum or bool param and equals one of its values");
+    }
   });
 
   const rules = def.rules && typeof def.rules === "object" ? def.rules : (bad("rules", "required object"), {});
