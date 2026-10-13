@@ -60,3 +60,14 @@ test("tools/textures.json covers the catalog and CREDITS.md credits every asset 
   assert.match(credits, /ambientcg\.com/i);
   for (const asset of Object.values(assets)) assert.ok(credits.includes(asset), `CREDITS.md does not mention ${asset}`);
 });
+
+test("every finish has a small swatch thumbnail (112x112 JPEG under 20 KB)", () => {
+  for (const m of MATERIAL_CATALOG) {
+    const url = web(`textures/${m.id}/thumb.jpg`);
+    assert.ok(existsSync(url), `missing textures/${m.id}/thumb.jpg (run tools/make_thumbs.py)`);
+    const buf = readFileSync(url);
+    assert.ok(buf.length < 20_000, `${m.id}/thumb.jpg is ${buf.length} bytes`);
+    assert.deepEqual([...buf.subarray(0, 3)], [0xff, 0xd8, 0xff]);
+    assert.deepEqual(jpegSize(buf), { w: 112, h: 112 });
+  }
+});
