@@ -61,14 +61,19 @@ for (const id of typeIds()) {
     assert.equal(isVisible(seed, randomize(def, loadPreset(def, def.presets[0]))), true);
   });
 
-  test(`${id}: pressing 랜덤 repeatedly gives visibly different facades`, () => {
-    const rand = mulberry32(42);
-    let values = { ...loadPreset(def, def.presets[0]), bays: 8 };
-    const looks = new Set();
-    for (let i = 0; i < 20; i++) {
-      values = randomize(def, values, rand);
-      looks.add(JSON.stringify(generate(def, values).terminals.map((t) => `${t.path}:${t.mat}:${t.role}`)));
+  test(`${id}: every 랜덤 press changes the facade, from every preset and at the minimum, default and maximum bays`, () => {
+    const bays = def.params.find((p) => p.key === "bays");
+    const look = (v) => JSON.stringify(generate(def, v).terminals.map((t) => `${t.path}:${t.mat}:${t.role}`));
+    for (const pr of def.presets) {
+      for (const n of [bays.min, bays.default, bays.max]) {
+        const rand = mulberry32(n * 31 + 7);
+        let values = { ...loadPreset(def, pr), bays: n };
+        for (let i = 0; i < 60; i++) {
+          const next = randomize(def, values, rand);
+          assert.notEqual(look(next), look(values), `${id} / ${pr.label} / bays=${n}: press ${i + 1} left the facade unchanged`);
+          values = next;
+        }
+      }
     }
-    assert.ok(looks.size >= 3, `only ${looks.size} distinct facades from 20 presses`);
   });
 }

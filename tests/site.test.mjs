@@ -43,3 +43,17 @@ test("sliders get an explicit accessible name (the wrapping label would otherwis
   assert.match(controls, /input\.setAttribute\("aria-label", p\.label\)/);
   assert.match(controls, /out\.setAttribute\("aria-hidden", "true"\)/);
 });
+
+test("swatch buttons keep a visible keyboard focus ring: a .swatch:focus-visible rule exists and the base rules draw the resting ring with box-shadow, not outline", () => {
+  const css = readFileSync(new URL("studio/studio.css", WEB), "utf8");
+  assert.match(css, /\.swatch:focus-visible\s*\{[^}]*outline:\s*2px solid/);
+  const base = css.match(/\.swatch\s*\{[^}]*\}/)[0];
+  const pressed = css.match(/\.swatch\[aria-pressed="true"\]\s*\{[^}]*\}/)[0];
+  assert.doesNotMatch(base + pressed, /\boutline:\s*[^n;]/, "an outline on .swatch would override the shared :focus-visible ring");
+});
+
+test("the two swatch rows are named groups, so a screen reader can tell 주 마감재 from 보조 마감재", () => {
+  const app = readFileSync(new URL("studio/app.js", WEB), "utf8");
+  assert.match(app, /swatches\.setAttribute\("role", "group"\)/);
+  assert.match(app, /swatches\.setAttribute\("aria-label", title\)/);
+});

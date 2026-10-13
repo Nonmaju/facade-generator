@@ -57,8 +57,9 @@ button { font-family: inherit; }
 .finish-title { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.04em; }
 .finish-name { font-size: 13px; font-weight: 500; }
 .swatches { display: flex; gap: 8px; }
-.swatch { width: 40px; height: 40px; padding: 0; overflow: hidden; border: 2px solid #121518; outline: 1px solid rgba(255, 255, 255, 0.22); border-radius: 10px; background: none; cursor: pointer; }
-.swatch[aria-pressed="true"] { outline: 2.5px solid var(--accent); }
+.swatch { width: 40px; height: 40px; padding: 0; overflow: hidden; border: 2px solid #121518; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22); border-radius: 10px; background: none; cursor: pointer; }
+.swatch[aria-pressed="true"] { box-shadow: 0 0 0 2.5px var(--accent); }
+.swatch:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .swatch img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
 /* Bottom dock: type, presets, random */

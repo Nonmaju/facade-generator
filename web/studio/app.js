@@ -115,6 +115,8 @@ async function main() {
     const box = $(`#finish-${slot}`);
     const name = el("span", "finish-name");
     const swatches = el("div", "swatches");
+    swatches.setAttribute("role", "group");
+    swatches.setAttribute("aria-label", title);
     const buttons = MATERIAL_CATALOG.map((m) => {
       const b = el("button", "swatch");
       b.type = "button";
