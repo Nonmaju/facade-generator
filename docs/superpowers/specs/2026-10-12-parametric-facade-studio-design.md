@@ -19,7 +19,7 @@ Pivot of this repo (same repo, evolved): a browser-only parametric facade studio
 | Facade types | 3 now: grid punched-window, curtain wall, louver/masonry. Built so a rule editor (C) is an additive later step. |
 | Parameters | Common 6 (floors, bays, window ratio, floor height, rhythm, seed) + 1-2 per type. |
 | Existing UI | Reuse direction: two tabs. Gallery tab is demo-only; live-mode UI is not exposed, `queue.js`/`render.js`/`server/` kept as code. |
-| Concrete UI visuals | **Not decided here.** A mockup gate comes first (see Plan structure). |
+| Concrete UI visuals | **Decided 2026-10-13: studio tab = mockup B** (dark, full-bleed 3D canvas with floating controls: parameter card on the right, finish card bottom-left, type/preset/random dock at the bottom center, status chip bottom-right). Mockup canvas (private claude.ai artifact, boards: Main = A, B, Gallery, Mobile): https://claude.ai/artifact/ApANK5WvetZidis1o3xYPw . Mockup assumptions that stand: the `랜덤` button switches rhythm to `랜덤` and draws a new seed; the seed slider is shown only while rhythm is `랜덤` (resolves the review finding about a seed control with no visible effect). Gallery tab: existing offline SDXL gallery as in the Gallery board for Part 2; an evolution that ties it to the studio is an optional later part (see Out of scope). Mobile: stacked layout from the Mobile board, restyled with B's dark palette (default, not yet reviewed by the user). Font: Noto Sans KR + IBM Plex Mono via Google Fonts. |
 | Textures | 6 materials x (color + normal + roughness) 1K JPG: concrete, brick, wood, plaster, metal panel, stone. Glass is a texture-less `MeshPhysicalMaterial`. |
 | Sketch input (OpenCV.js) | Out of v1; documented as next step (a sketch -> param-values converter fits on top of the param schema). |
 | Presets | 2 per type (6 total), first preset auto-loaded on entry, "random" button changes only the seed. |
@@ -105,7 +105,7 @@ Browser checklist (Claude, built-in browser, local `python -m http.server`): all
 - CDN version drift (pinned exact version) and texture size (6 materials, about 6-9 MB expected).
 
 ## Out of scope
-Sketch input (OpenCV.js), rule editor (C), demo video, live-mode UI, deployment, repo rename.
+Sketch input (OpenCV.js), rule editor (C), demo video, live-mode UI, deployment, repo rename. Optional later part, only if the user wants it: pre-generated AI renders of the studio's own presets (grammar output drawn as a line drawing, run through SDXL + ControlNet offline on a free GPU, shown next to the real-time 3D); live AI from arbitrary user parameters is not possible without a GPU server.
 
 ## Credits
 Textures: ambientCG (CC0), listed per material in README at implementation time. Existing: `villa_elev` is a crop of Rijksmuseum RP-T-1966-65-1 (CC0); `modern` is drawn by the author.
