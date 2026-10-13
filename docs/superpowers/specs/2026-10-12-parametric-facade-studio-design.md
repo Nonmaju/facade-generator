@@ -1,6 +1,6 @@
 # Parametric Facade Studio — Design (2026-10-12)
 
-Pivot of this repo (same repo, evolved): a browser-only parametric facade studio. A shape grammar turns parameters into a facade; Three.js shows it with real-time PBR material swapping. The earlier SDXL+ControlNet renders stay as an offline AI gallery tab.
+Pivot of this repo (same repo, evolved): a browser-only parametric facade studio. A shape grammar turns parameters into a facade; Three.js shows it with real-time PBR material swapping. The earlier SDXL+ControlNet renders stay in the repo and tell the pivot story in the README (no gallery tab, decided 2026-10-13).
 
 ## Purpose and success
 - Portfolio piece. A visitor opens the page, sees a facade immediately, and within 30 seconds can switch presets, move sliders, and swap materials. No explanation needed.
@@ -18,8 +18,8 @@ Pivot of this repo (same repo, evolved): a browser-only parametric facade studio
 |---|---|
 | Facade types | 3 now: grid punched-window, curtain wall, louver/masonry. Built so a rule editor (C) is an additive later step. |
 | Parameters | Common 6 (floors, bays, window ratio, floor height, rhythm, seed) + 1-2 per type. |
-| Existing UI | Reuse direction: two tabs. Gallery tab is demo-only; live-mode UI is not exposed, `queue.js`/`render.js`/`server/` kept as code. |
-| Concrete UI visuals | **Not decided here.** A mockup gate comes first (see Plan structure). |
+| Existing UI | **Updated 2026-10-13: no gallery tab.** The studio is a single page (mockup B). The old SDXL results stay in the repo and appear as a few images in the README story. The old gallery page is renamed `web/legacy-gallery.html` and not linked from the studio; `queue.js`, `render.js`, `server/` and their tests stay as code until a cleanup the user decides at the end. |
+| Concrete UI visuals | **Decided 2026-10-13: studio tab = mockup B** (dark, full-bleed 3D canvas with floating controls: parameter card on the right, finish card bottom-left, type/preset/random dock at the bottom center, status chip bottom-right). Mockup canvas (private claude.ai artifact, boards: Main = A, B, Gallery, Mobile): https://claude.ai/artifact/ApANK5WvetZidis1o3xYPw . Mockup assumptions that stand: the `랜덤` button switches rhythm to `랜덤` and draws a new seed; the seed slider is shown only while rhythm is `랜덤` (resolves the review finding about a seed control with no visible effect). Gallery tab: dropped (see Existing UI); the Gallery board in the mockup is obsolete. Mobile: stacked layout from the Mobile board, restyled with B's dark palette (default, not yet reviewed by the user). Font: Noto Sans KR + IBM Plex Mono via Google Fonts. |
 | Textures | 6 materials x (color + normal + roughness) 1K JPG: concrete, brick, wood, plaster, metal panel, stone. Glass is a texture-less `MeshPhysicalMaterial`. |
 | Sketch input (OpenCV.js) | Out of v1; documented as next step (a sketch -> param-values converter fits on top of the param schema). |
 | Presets | 2 per type (6 total), first preset auto-loaded on entry, "random" button changes only the seed. |
@@ -32,12 +32,12 @@ Grammar is pure JS (no DOM, no Three.js) so it is testable with `node --test`. T
 
 ```
 web/
-  index.html            two tabs: 스튜디오 / AI 갤러리 (visuals per mockup gate)
+  index.html            the studio page (mockup B)
   studio/
     grammar/            expr.js (safe expression parser), engine.js, rng.js, validate.js
     types/              grid.json, curtainwall.json, louver.json
     view/               scene.js, materials.js, controls.js
-  gallery/              existing demo-gallery code moved here; no live-mode UI
+  legacy-gallery.html   the old gallery page, renamed, not linked (its app.js, queue.js, render.js, style.css, samples/ and server/ stay until cleanup)
   textures/<material>/{color,normal,rough}.jpg
 tests/grammar/*.test.mjs
 ```
@@ -78,7 +78,7 @@ Common 6 params: floors, bays, window ratio, floor height, rhythm (regular `A` /
 1. UI-independent work first: grammar engine + tests, three type files, Three.js view core, a throwaway debug page.
 2. **UI mockup gate:** before any real UI code, obtain mockups (Claude Design, or an artifact made by Claude; method chosen at that point), the user reviews them and decides. No UI implementation before that approval.
 3. UI implementation per the approved mockup.
-4. Move the gallery into its tab, README story, credits.
+4. README story (with a few SDXL images), credits; rename the old gallery page to `legacy-gallery.html`.
 5. Final checks.
 
 Rough schedule 3-5 weeks (unmeasured estimate).
@@ -105,7 +105,7 @@ Browser checklist (Claude, built-in browser, local `python -m http.server`): all
 - CDN version drift (pinned exact version) and texture size (6 materials, about 6-9 MB expected).
 
 ## Out of scope
-Sketch input (OpenCV.js), rule editor (C), demo video, live-mode UI, deployment, repo rename.
+Sketch input (OpenCV.js), rule editor (C), demo video, live-mode UI, deployment, repo rename. A preset-linked AI comparison (pre-generated SDXL renders of the studio presets) was considered and dropped together with the gallery tab; live AI from arbitrary user parameters is not possible without a GPU server.
 
 ## Credits
 Textures: ambientCG (CC0), listed per material in README at implementation time. Existing: `villa_elev` is a crop of Rijksmuseum RP-T-1966-65-1 (CC0); `modern` is drawn by the author.
@@ -119,4 +119,4 @@ Textures: ambientCG (CC0), listed per material in README at implementation time.
 - **`windowRatio`** is the linear fraction of a bay's width and height that is opening (grid, louver) or the vision-glass height share of a floor (curtain wall).
 - **Curtain-wall mullions** are drawn as two adjacent strips per glass cell, so the invariant is 2 strips per cell.
 - **Slots:** `primary` and `secondary` are the swappable finishes; `glass` and `frame` are fixed per type.
-- **Plan is split.** Part 1 covers the engine, three types, textures, 3D view and the UI mockup gate. Part 2 (real UI, gallery tab, README, final checks) is written after a mockup is approved.
+- **Plan is split.** Part 1 covers the engine, three types, textures, 3D view and the UI mockup gate. Part 2 (real UI, README, final checks) is written after a mockup is approved.
