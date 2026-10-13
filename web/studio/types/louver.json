@@ -74,7 +74,11 @@
       "min": 0,
       "max": 9999,
       "step": 1,
-      "default": 1
+      "default": 1,
+      "showWhen": {
+        "key": "rhythm",
+        "equals": "random"
+      }
     },
     {
       "key": "louvers",

@@ -55,3 +55,15 @@ test("garbage input does not throw", () => {
   assert.ok(validateType({}).length > 0);
   assert.throws(() => assertValid({}), /invalid facade type/);
 });
+
+test("showWhen must name another enum or bool param and one of its values", () => {
+  const ok = (d) => (d.params[0].showWhen = { key: "r", equals: "a" });
+  assert.deepEqual(errorsOf(ok), []);
+  assert.deepEqual(errorsOf((d) => (d.params[0].showWhen = { key: "b", equals: true })), []);
+  assert.match(errorsOf((d) => (d.params[0].showWhen = { key: "nope", equals: "a" })).join(), /params\[0\]\.showWhen: key must name another param/);
+  assert.match(errorsOf((d) => (d.params[0].showWhen = { key: "n", equals: 1 })).join(), /showWhen: key must name another param/); // itself
+  assert.match(errorsOf((d) => (d.params[1].showWhen = { key: "n", equals: 1 })).join(), /params\[1\]\.showWhen: target must be an enum or bool/);
+  assert.match(errorsOf((d) => (d.params[0].showWhen = { key: "r", equals: "zzz" })).join(), /showWhen: target must be an enum or bool/);
+  assert.match(errorsOf((d) => (d.params[0].showWhen = { key: "b", equals: "true" })).join(), /showWhen: target must be an enum or bool/);
+  assert.match(errorsOf((d) => (d.params[0].showWhen = "r")).join(), /showWhen/);
+});
