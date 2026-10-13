@@ -4,6 +4,7 @@ import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { SLOTS } from "../grammar/validate.js";
 import { createMaterialLibrary } from "./materials.js";
 import { DEFAULT_FINISH } from "./catalog.js";
+import { fitDistance, VIEW_DIR } from "./fit.js";
 
 /**
  * Thin Three.js layer: one InstancedMesh per material slot, fed with terminal boxes from the grammar.
@@ -111,10 +112,9 @@ export function createScene(canvas) {
     /** Frame a width x height facade (meters) and aim the sun at it. */
     fit(w, h) {
       resize(); // re-measure first: the camera aspect must match the canvas as it is right now
-      const t =Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-      const dist = Math.max(h / 2 / t, w / 2 / camera.aspect / t) * 1.25 + 2;
+      const dist = fitDistance(w, h, camera.fov, camera.aspect);
       controls.target.set(w / 2, h / 2, 0);
-      camera.position.set(w / 2 + dist * 0.45, h / 2 + dist * 0.1, dist * 0.95);
+      camera.position.copy(controls.target).addScaledVector(new THREE.Vector3(...VIEW_DIR).normalize(), dist);
       sun.position.set(w / 2 - w * 0.6 - 10, h + 25, 35);
       sun.target.position.set(w / 2, h / 2, 0);
       const r = Math.max(w, h) * 1.2;
