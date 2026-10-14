@@ -49,6 +49,7 @@ web/
     view/               Three.js 장면, 재질, 컨트롤, 카메라 맞춤
   textures/             ambientCG 1K 텍스처 6종 + 견본 썸네일
   legacy-gallery.html   예전 SDXL 갤러리 (스튜디오와 연결하지 않음)
+  app.js queue.js render.js style.css samples/   예전 갤러리가 쓰는 파일 (스튜디오와 무관)
 server/                 예전 Kaggle 서버 (검증하지 않음)
 spike/                  예전 ControlNet 실험 (노트북, 스케치)
 tests/ tools/           테스트, 텍스처 내려받기와 견본 만들기
