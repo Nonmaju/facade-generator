@@ -5,7 +5,18 @@ export const SLOTS = ["primary", "secondary", "glass", "frame"];
 const OPS = ["split", "repeat", "inset", "emit", "nil"];
 const PARAM_TYPES = ["int", "float", "enum", "bool"];
 
+const BAD_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+
+/** Never throws: structural surprises become a message, so an editor can show them instead of crashing. */
 export function validateType(def) {
+  try {
+    return check(def);
+  } catch (e) {
+    return [`root: unexpected structure (${e.message})`];
+  }
+}
+
+function check(def) {
   if (!def || typeof def !== "object") return ["root: must be an object"];
   const errs = [];
   const bad = (path, msg) => errs.push(`${path}: ${msg}`);
@@ -32,7 +43,8 @@ export function validateType(def) {
   const params = Array.isArray(def.params) ? def.params : (bad("params", "must be an array"), []);
   params.forEach((p, i) => {
     const at = `params[${i}]`;
-    if (typeof p.key !== "string" || !p.key) return bad(at, "key required");
+    if (!p || typeof p !== "object") return bad(at, "must be an object");
+    if (typeof p.key !== "string" || !/^[A-Za-z_]\w*$/.test(p.key) || BAD_KEYS.has(p.key)) return bad(at, "key must be a plain identifier (letters, digits, _) and not a reserved name");
     if (keys.has(p.key)) bad(at, `duplicate key "${p.key}"`);
     keys.add(p.key);
     if (typeof p.label !== "string") bad(at, "label required");
@@ -65,6 +77,7 @@ export function validateType(def) {
     }
     list.forEach((r, i) => {
       const at = `rules.${name}[${i}]`;
+      if (!r || typeof r !== "object") return bad(at, "must be an object");
       if (r.when !== undefined) exprOk(`${at}.when`, r.when);
       if (!OPS.includes(r.op)) return bad(at, `op must be one of ${OPS.join(", ")}`);
       if ((r.op === "split" || r.op === "repeat") && r.axis !== "x" && r.axis !== "y") bad(at, 'axis must be "x" or "y"');
@@ -72,6 +85,7 @@ export function validateType(def) {
         if (!Array.isArray(r.parts) || !r.parts.length) return bad(at, "parts required");
         r.parts.forEach((p, j) => {
           const pa = `${at}.parts[${j}]`;
+          if (!p || typeof p !== "object") return bad(pa, "must be an object");
           if (p.size === "~") {
             // fill remainder
           } else if (p.size && typeof p.size === "object") exprOk(`${pa}.size.r`, p.size.r);
@@ -99,8 +113,10 @@ export function validateType(def) {
 
   (Array.isArray(def.presets) ? def.presets : (bad("presets", "must be an array"), [])).forEach((pr, i) => {
     const at = `presets[${i}]`;
+    if (!pr || typeof pr !== "object") return bad(at, "must be an object");
     if (typeof pr.label !== "string") bad(at, "label required");
-    for (const [k, v] of Object.entries(pr.values ?? {})) {
+    if (pr.values !== undefined && (pr.values === null || typeof pr.values !== "object" || Array.isArray(pr.values))) bad(`${at}.values`, "must be an object");
+    for (const [k, v] of Object.entries(pr.values && typeof pr.values === "object" ? pr.values : {})) {
       const p = params.find((q) => q.key === k);
       if (!p) bad(`${at}.values.${k}`, "no such param");
       else if ((p.type === "int" || p.type === "float") && !(v >= p.min && v <= p.max)) bad(`${at}.values.${k}`, "out of range");
