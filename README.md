@@ -48,11 +48,9 @@ web/
     types/              grid.json curtainwall.json louver.json + index.json
     view/               Three.js 장면, 재질, 컨트롤, 카메라 맞춤
   textures/             ambientCG 1K 텍스처 6종 + 견본 썸네일
-  legacy-gallery.html   예전 SDXL 갤러리 (스튜디오와 연결하지 않음)
-  app.js queue.js render.js style.css samples/   예전 갤러리가 쓰는 파일 (스튜디오와 무관)
-server/                 예전 Kaggle 서버 (검증하지 않음)
+  samples/              예전 SDXL 결과 이미지 (README에서만 사용)
 spike/                  예전 ControlNet 실험 (노트북, 스케치)
-tests/ tools/           테스트, 텍스처 내려받기와 견본 만들기
+tests/ tools/           테스트, 텍스처 내려받기와 견본 썸네일 만들기
 docs/superpowers/       스펙과 구현 계획
 ```
 
@@ -64,9 +62,9 @@ npm test
 
 Node 24에서 실행해 확인했습니다 (`node --test`를 지원하는 최근 버전이면 될 것으로 보이지만 다른 버전은 확인하지 못했습니다). 문법 엔진은 `node --test`로 검증합니다. 모든 유형이 모든 파라미터 극단 조합에서 부재가 겹치지 않고 입면을 빈틈없이 채우는지, 같은 입력이 같은 결과를 내는지, 식 파서가 위험한 이름을 거부하는지 등을 확인합니다. 3D 화면은 브라우저에서 직접 점검했습니다.
 
-## 예전 갤러리
+## 예전 갤러리 코드
 
-`web/legacy-gallery.html`은 처음에 만든 갤러리입니다. 미리 생성해 둔 SDXL 결과를 보여주고, 서버 주소를 입력하면 직접 올린 스케치를 렌더하는 라이브 모드가 있습니다. 라이브 모드(`server/kaggle_server.py`)는 Kaggle에서 실제로 돌려보지 않았습니다. 스튜디오에서는 연결하지 않았습니다.
+처음에는 이 이미지들을 보여주는 갤러리 페이지와, 직접 올린 스케치를 Kaggle GPU에서 렌더하는 서버(`server/kaggle_server.py`, 실제로 돌려보지는 못했습니다)도 만들었습니다. 스튜디오로 방향을 바꾸면서 그 코드는 지웠고, 이미지(`web/samples/`)와 실험 기록(`spike/`)만 남겼습니다. 지운 코드는 git 기록에 있습니다: `git show 9c15fb3:web/app.js` 처럼 커밋 `9c15fb3`에서 꺼낼 수 있습니다.
 
 ## 크레딧
 

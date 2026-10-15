@@ -30,8 +30,13 @@ test("the studio page does not link to the legacy gallery or its live-mode serve
   assert.doesNotMatch(html, /legacy-gallery|live|서버 설정/i);
 });
 
-test("the old gallery page is kept as legacy-gallery.html, outside the studio page", () => {
-  assert.ok(existsSync(new URL("legacy-gallery.html", WEB)));
+test("the old gallery code is gone, and the sample images it produced are kept", () => {
+  for (const f of ["legacy-gallery.html", "app.js", "queue.js", "render.js", "style.css", "../server/kaggle_server.py", "../tools/make_samples.py"]) {
+    assert.ok(!existsSync(new URL(f, WEB)), `${f} should have been deleted`);
+  }
+  for (const id of ["modern", "villa_elev"]) {
+    for (const f of ["sketch", "concrete", "brick", "glass", "wood"]) assert.ok(existsSync(new URL(`samples/${id}/${f}.jpg`, WEB)), `missing samples/${id}/${f}.jpg`);
+  }
 });
 
 test("the canvas is exposed as an image with a text alternative", () => {
