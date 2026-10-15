@@ -23,7 +23,10 @@ export function createScene(canvas) {
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xdfe6ec);
-  scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const envTarget = pmrem.fromScene(new RoomEnvironment(), 0.04);
+  scene.environment = envTarget.texture;
+  pmrem.dispose();
   scene.add(new THREE.HemisphereLight(0xffffff, 0x8899aa, 0.6));
 
   const sun = new THREE.DirectionalLight(0xffffff, 2.2);
@@ -74,7 +77,8 @@ export function createScene(canvas) {
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
-  new ResizeObserver(resize).observe(canvas);
+  const observer = new ResizeObserver(resize);
+  observer.observe(canvas);
   resize();
 
   renderer.setAnimationLoop(() => {
@@ -83,6 +87,25 @@ export function createScene(canvas) {
   });
 
   return {
+    /** Stop rendering and free GPU memory. The scene object must not be used afterwards. */
+    dispose() {
+      renderer.setAnimationLoop(null);
+      observer.disconnect();
+      controls.dispose();
+      for (const { mesh } of slots.values()) {
+        scene.remove(mesh);
+        mesh.dispose();
+      }
+      slots.clear();
+      box.dispose();
+      envTarget.dispose();
+      ground.geometry.dispose();
+      ground.material.dispose();
+      sun.shadow.map?.dispose();
+      lib.dispose();
+      renderer.dispose();
+    },
+
     /** terminals: [{x,y,z,w,h,d,mat}] from the grammar. Rewrites instance matrices only. */
     setTerminals(terminals) {
       const bySlot = Object.fromEntries(SLOTS.map((s) => [s, []]));

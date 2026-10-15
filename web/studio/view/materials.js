@@ -75,6 +75,17 @@ export function createMaterialLibrary() {
   }
 
   return {
+    /** Free every cached finish (and its textures) plus the fixed glass and frame materials. */
+    dispose() {
+      for (const mat of cache.values()) {
+        for (const tex of [mat.map, mat.normalMap, mat.roughnessMap]) tex?.dispose();
+        mat.dispose();
+      }
+      cache.clear();
+      glass.dispose();
+      frame.dispose();
+    },
+
     /** Material for a slot. Only primary/secondary use `finishId`; glass and frame are fixed. */
     forSlot(slot, finishId) {
       if (slot === "glass") return glass;
