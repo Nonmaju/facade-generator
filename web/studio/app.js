@@ -20,6 +20,7 @@ async function getJson(url) {
 }
 
 async function main() {
+  document.documentElement.dataset.ready = "1"; // tells index.html the modules loaded, so it skips the load-error notice
   const scene = createScene($("#view"));
   if (!scene) {
     $("#fallback").hidden = false;

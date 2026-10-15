@@ -57,3 +57,9 @@ test("the two swatch rows are named groups, so a screen reader can tell 주 마�
   assert.match(app, /swatches\.setAttribute\("role", "group"\)/);
   assert.match(app, /swatches\.setAttribute\("aria-label", title\)/);
 });
+
+test("a blocked or failed module load shows a Korean notice instead of a blank page", () => {
+  assert.match(html, /<script>[^<]*dataset\.ready[^<]*<\/script>/); // classic inline script: runs even if the module graph (three.js CDN) fails
+  assert.match(html, /id="load-error"[^>]*hidden/);
+  assert.match(app, /document\.documentElement\.dataset\.ready\s*=\s*"1"/);
+});

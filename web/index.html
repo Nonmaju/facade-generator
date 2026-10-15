@@ -60,6 +60,14 @@
 
   <p id="fallback" class="notice" role="alert" hidden>이 브라우저에서는 WebGL을 사용할 수 없어 3D 미리보기를 표시할 수 없습니다. 다른 브라우저에서 열어보세요.</p>
 
+  <p id="load-error" class="notice" role="alert" hidden>화면을 불러오지 못했습니다. 인터넷 연결을 확인하고 새로고침해 보세요. (3D 라이브러리를 외부 서버에서 받아옵니다.)</p>
+
   <script type="module" src="studio/app.js"></script>
+  <script>
+    // Classic script on purpose: it still runs when the module graph (three.js from the CDN) fails to load.
+    setTimeout(function () {
+      if (!document.documentElement.dataset.ready) document.getElementById("load-error").hidden = false;
+    }, 10000);
+  </script>
 </body>
 </html>
