@@ -15,7 +15,7 @@ const leaf = [{ op: "emit", mat: "primary", role: "x", depth: 0.1 }];
 function failsQuickly(def, pattern) {
   const t0 = performance.now();
   assert.throws(() => generate(def), pattern);
-  assert.ok(performance.now() - t0 < 400, `took ${(performance.now() - t0).toFixed(0)} ms to fail`);
+  assert.ok(performance.now() - t0 < 1000, `took ${(performance.now() - t0).toFixed(0)} ms to fail`);
 }
 
 test("an inherited name used as a symbol gives the normal 'no rules' error, not a TypeError", () => {

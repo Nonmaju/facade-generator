@@ -9,6 +9,20 @@ export const loadPreset = (def, preset) => ({ ...defaultValues(def), ...(preset?
 /** A param is shown unless its `showWhen` condition fails (e.g. the seed only while rhythm is "random"). */
 export const isVisible = (param, values) => !param.showWhen || values[param.showWhen.key] === param.showWhen.equals;
 
+/** After the rules were edited: keep each current value that still fits its (possibly changed) param, else use the default. */
+export function reconcileValues(def, values = {}) {
+  const out = {};
+  for (const p of def.params) {
+    const v = values?.[p.key];
+    const ok =
+      p.type === "enum" ? p.options?.some((o) => o.value === v)
+      : p.type === "bool" ? typeof v === "boolean"
+      : typeof v === "number" && Number.isFinite(v) && v >= p.min && v <= p.max;
+    out[p.key] = ok ? v : p.default;
+  }
+  return out;
+}
+
 // The bay pattern stretched or cut to one letter per bay: two values with different results look different.
 const perBay = (pattern, bays) => Array.from({ length: bays }, (_, i) => pattern[i % pattern.length]).join("");
 

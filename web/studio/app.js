@@ -4,16 +4,28 @@ import { assertValid } from "./grammar/validate.js";
 import { buildControls, el } from "./view/controls.js";
 import { createScene } from "./view/scene.js";
 import { MATERIAL_CATALOG, DEFAULT_FINISH } from "./view/catalog.js";
-import { loadPreset, randomize } from "./state.js";
+import { loadPreset, randomize, reconcileValues } from "./state.js";
+import { createEditor } from "./editor.js";
+import { createEditorPanel } from "./view/editor-panel.js";
 
 const $ = (selector) => document.querySelector(selector);
 let announceTimer;
-const setStatus = (text) => {
-  $("#status").textContent = text;
-  // The chip changes on every frame while a slider is dragged; tell screen readers only once the changes pause.
+// The chip changes on every frame while a slider is dragged; tell screen readers only once the changes pause.
+const announce = (text) => {
   clearTimeout(announceTimer);
   announceTimer = setTimeout(() => ($("#announce").textContent = text), 700);
 };
+const setStatus = (text) => {
+  $("#status").textContent = text;
+  announce(text);
+};
+const storage = (() => {
+  try {
+    return window.localStorage; // reading the property itself can throw (blocked cookies, private modes)
+  } catch {
+    return null;
+  }
+})();
 const FINISH_SLOTS = [
   ["primary", "주 마감재"],
   ["secondary", "보조 마감재"],
@@ -42,8 +54,13 @@ async function main() {
     return;
   }
 
-  let def;
+  // One editor per built-in type: it holds that type's edited rules (restored from storage) and the last valid def.
+  const editors = new Map(types.map((t) => [t.id, createEditor(t, storage)]));
+  for (const ed of editors.values()) ed.restore((d) => generate(d, {}));
+  let current = types[0]; // the selected built-in type
+  let def; // its active (possibly edited) definition
   let values;
+  let panel; // the rule-editor panel, created below
   let activePreset = 0; // -1 once a control has been touched
   let queued = false;
   let refit = false;
@@ -77,7 +94,7 @@ async function main() {
       ...types.map((t) => {
         const b = el("button", "seg-btn", t.label);
         b.type = "button";
-        pressed(b, t === def);
+        pressed(b, t === current);
         b.addEventListener("click", () => selectType(t));
         return b;
       })
@@ -106,11 +123,13 @@ async function main() {
     schedule(fit);
   }
   function selectType(t) {
-    def = t;
+    current = t;
+    def = editors.get(t.id).activeDef;
     activePreset = 0;
     renderTypes();
     renderPresets();
     showValues(loadPreset(def, def.presets[0]), true);
+    panel?.show(editors.get(t.id), true);
   }
   function selectPreset(i) {
     activePreset = i;
@@ -145,6 +164,35 @@ async function main() {
     box.replaceChildren(head, swatches);
     choose(MATERIAL_CATALOG.find((m) => m.id === DEFAULT_FINISH[slot]));
   }
+
+  // Rule editor: edits go through the pure editor; a valid result replaces the active def and the controls follow its schema.
+  function applyEdited(replaceText) {
+    const ed = editors.get(current.id);
+    panel.show(ed, replaceText);
+    if (ed.status === "오류" || ed.activeDef === def) return;
+    const schemaChanged = JSON.stringify(ed.activeDef.params) !== JSON.stringify(def.params);
+    const presetsChanged = JSON.stringify(ed.activeDef.presets) !== JSON.stringify(def.presets);
+    def = ed.activeDef;
+    if (presetsChanged) {
+      if (activePreset >= def.presets.length) activePreset = -1;
+      renderPresets();
+    }
+    if (schemaChanged) showValues(reconcileValues(def, values), false);
+    else schedule(); // same schema: keep the controls (and the user's focus), only regenerate
+  }
+  panel = createEditorPanel({
+    toggle: $("#edit-toggle"), panel: $("#editor"), textarea: $("#editor-text"), list: $("#editor-errors"),
+    status: $("#editor-status"), resetBtn: $("#editor-reset"), copyBtn: $("#editor-copy"), announce,
+    onToggle: () => schedule(true), // the 3D view changes width: re-frame the facade
+    onInput: (text) => {
+      editors.get(current.id).edit(text, (d) => generate(d, values));
+      applyEdited(false);
+    },
+    onReset: () => {
+      editors.get(current.id).reset();
+      applyEdited(true);
+    },
+  });
 
   $("#random").addEventListener("click", () => {
     activePreset = -1;
