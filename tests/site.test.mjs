@@ -80,3 +80,23 @@ test("forced-colors mode keeps the pressed state visible without relying on colo
   assert.match(css, /@media \(forced-colors: active\)/);
   assert.match(css, /forced-colors[\s\S]*aria-pressed="true"[\s\S]*(outline|border)/);
 });
+
+test("the rule editor panel: toggle and panel exist, ids match what app.js looks up, and the new files never use innerHTML", () => {
+  for (const id of ["edit-toggle", "editor", "editor-text", "editor-errors", "editor-status", "editor-reset", "editor-copy"]) {
+    assert.match(html, new RegExp(`id="${id}"`), `index.html has no #${id}`);
+    assert.match(app, new RegExp(`#${id}`), `app.js never looks up #${id}`);
+  }
+  assert.match(html, /id="editor"[^>]*\bhidden\b/);
+  assert.match(html, /id="edit-toggle"[^>]*aria-expanded="false"/);
+  for (const f of ["studio/editor.js", "studio/view/editor-panel.js"]) {
+    assert.doesNotMatch(readFileSync(new URL(f, WEB), "utf8"), /innerHTML|insertAdjacentHTML|outerHTML/, `${f} must not build HTML from text`);
+  }
+});
+
+test("the header editor button has its own readable (dark glass) style, and an open panel narrows the 3D view instead of covering it", () => {
+  const css = readFileSync(new URL("studio/studio.css", WEB), "utf8");
+  assert.match(css, /\.bar-actions \.btn-ghost\s*\{[^}]*background:\s*var\(--card\)/);
+  assert.match(css, /body\.editor-open #view\s*\{[^}]*width:\s*calc\(100vw - /);
+  assert.match(readFileSync(new URL("studio/view/editor-panel.js", WEB), "utf8"), /onToggle/);
+  assert.match(app, /onToggle:\s*\(\)\s*=>\s*schedule\(true\)/);
+});

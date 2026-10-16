@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { generate } from "../web/studio/grammar/engine.js";
 import { mulberry32 } from "../web/studio/grammar/rng.js";
-import { defaultValues, loadPreset, isVisible, randomize } from "../web/studio/state.js";
+import { defaultValues, loadPreset, isVisible, randomize, reconcileValues } from "../web/studio/state.js";
 import { typeIds, loadType } from "./grammar/helpers.mjs";
 
 const mini = {
@@ -77,3 +77,18 @@ for (const id of typeIds()) {
     }
   });
 }
+
+test("reconcileValues keeps valid current values and falls back to defaults when the edited schema changed", () => {
+  const def = {
+    params: [
+      { key: "floors", type: "int", min: 2, max: 12, step: 1, default: 5 },
+      { key: "mode", type: "enum", default: "a", options: [{ value: "a" }, { value: "b" }] },
+      { key: "open", type: "bool", default: true },
+      { key: "fresh", type: "float", min: 0, max: 1, step: 0.1, default: 0.5 },
+    ],
+  };
+  const out = reconcileValues(def, { floors: 9, mode: "zzz", open: false, gone: 1, fresh: 7 });
+  assert.deepEqual(out, { floors: 9, mode: "a", open: false, fresh: 0.5 });
+  assert.deepEqual(reconcileValues(def, { floors: "9" }), defaultValues(def));
+  assert.deepEqual(reconcileValues(def, undefined), defaultValues(def));
+});

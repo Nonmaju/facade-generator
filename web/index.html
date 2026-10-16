@@ -26,10 +26,13 @@
       </div>
       <a class="link" href="https://github.com/Nonmaju/facade-generator#readme" target="_blank" rel="noopener">프로젝트 이야기</a>
     </div>
+    <div class="bar-actions">
+    <button id="edit-toggle" class="btn-ghost" type="button" aria-expanded="false" aria-controls="editor">규칙 편집</button>
     <button id="shot" class="btn-accent" type="button">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>
       PNG 저장
     </button>
+    </div>
   </header>
 
   <canvas id="view" role="img" aria-label="파사드 3D 미리보기. 드래그로 회전하고 휠로 확대합니다."></canvas>
@@ -44,6 +47,19 @@
       랜덤
     </button>
   </div>
+
+  <aside id="editor" class="card editor" aria-labelledby="editor-title" hidden>
+    <div class="editor-head">
+      <h2 id="editor-title">규칙 편집</h2>
+      <span id="editor-status" class="editor-status"></span>
+    </div>
+    <textarea id="editor-text" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="파사드 규칙 JSON" aria-describedby="editor-errors"></textarea>
+    <ul id="editor-errors" class="editor-errors" hidden></ul>
+    <div class="editor-actions">
+      <button id="editor-reset" class="btn-ghost" type="button">원래대로</button>
+      <button id="editor-copy" class="btn-ghost" type="button">JSON 복사</button>
+    </div>
+  </aside>
 
   <p id="status" class="chip"></p>
   <p id="announce" class="sr-only" role="status"></p>

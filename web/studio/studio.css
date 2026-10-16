@@ -113,3 +113,37 @@ button { font-family: inherit; }
   .swatch[aria-pressed="true"] { outline: 3px solid Highlight; outline-offset: 2px; }
   .chip-btn, .seg-btn, .btn-ghost, .btn-accent { border: 1px solid ButtonText; }
 }
+
+/* Rule editor panel: opens from the right, the 3D stays visible on the left. The parameter card hides while it is open. */
+.bar-actions { display: flex; align-items: center; gap: 10px; }
+.editor { right: 24px; top: 84px; bottom: 100px; width: 480px; max-width: calc(100vw - 48px); padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; z-index: 3; }
+.editor[hidden] { display: none; }
+body.editor-open .params { display: none; }
+.editor-head { display: flex; justify-content: space-between; align-items: baseline; }
+.editor-head h2 { margin: 0; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.04em; }
+.editor-status { font-size: 12px; font-weight: 700; color: var(--soft); }
+.editor-status[data-state="적용됨"] { color: #8fe3a8; }
+.editor-status[data-state="오류"] { color: #ff9a8a; }
+#editor-text { flex: 1; min-height: 160px; width: 100%; resize: none; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: rgba(0, 0, 0, 0.35); color: var(--ink); font: 12px/1.5 var(--mono); tab-size: 2; white-space: pre; overflow: auto; }
+#editor-text[aria-invalid="true"] { border-color: #ff9a8a; }
+.editor-errors { margin: 0; padding: 0; list-style: none; max-height: 30%; overflow: auto; font: 12px/1.45 var(--mono); color: #ffb4a8; }
+.editor-error { padding: 3px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.editor-actions { display: flex; gap: 8px; }
+.editor-actions .btn-ghost { margin: 0; flex: 1; justify-content: center; }
+@media (max-width: 1359px) {
+  /* the right column is a shared scrolling column here; the open editor takes its place */
+  body.editor-open .side { display: none; }
+}
+@media (max-width: 820px) {
+  .editor { position: static; width: auto; max-width: none; margin: 12px; height: 70vh; }
+  body.editor-open .side { display: flex; }
+}
+
+/* The header button sits on the light sky, so it gets the dark glass look instead of the dock's translucent white. */
+.bar-actions .btn-ghost { margin: 0; padding: 11px 16px; background: var(--card); border: 1px solid var(--line); backdrop-filter: blur(10px); }
+.bar-actions .btn-ghost:hover { background: rgba(40, 44, 48, 0.92); }
+.bar-actions .btn-ghost[aria-expanded="true"] { border-color: var(--accent); }
+/* With the panel open (wide enough to sit beside the 3D), narrow the 3D view so the facade is not hidden behind it. */
+@media (min-width: 821px) {
+  body.editor-open #view { width: calc(100vw - 504px); }
+}
