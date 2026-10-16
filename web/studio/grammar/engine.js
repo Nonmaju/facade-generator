@@ -7,11 +7,16 @@ import { makePattern } from "./rhythm.js";
 const EPS = 1e-6;
 const MIN_INNER = 0.02; // inset never leaves an inner rect thinner than this
 const MAX_DEPTH = 32;
+const MAX_SHAPES = 50000; // every shape created, emitted or not: stops runaway fan-out (nil branches included)
+const MAX_TERMINALS = 20000; // about 6x the largest shipped facade
+const MIN_TILE = 0.01; // meters: a smaller repeat size is almost certainly a mistake
+const MAX_MS = 250; // backstop for anything the counters miss
+const FORBIDDEN_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 
 /** Defaults from the type's param schema, overridden by `values`, plus the derived rhythm pattern. */
 export function resolveParams(typeDef, values = {}) {
   const p = {};
-  for (const d of typeDef.params) p[d.key] = Object.hasOwn(values, d.key) ? values[d.key] : d.default;
+  for (const d of typeDef.params) if (!FORBIDDEN_KEYS.has(d.key)) p[d.key] = Object.hasOwn(values, d.key) ? values[d.key] : d.default;
   if (p.rhythm !== undefined && p.bays !== undefined) p.pattern = makePattern(p.rhythm, p.bays, p.seed ?? 0);
   return p;
 }
@@ -26,15 +31,21 @@ export function generate(typeDef, values = {}) {
     h: evalExpr(typeDef.size.h, scope),
     index: 0, count: 1, path: "0",
   };
+  if (!(root.w > 0) || !(root.h > 0) || !Number.isFinite(root.w) || !Number.isFinite(root.h)) {
+    throw new Error(`facade size must be a positive number, got ${root.w} x ${root.h}`);
+  }
   const terminals = [];
-  apply(typeDef.rules, typeDef.axiom, root, params, params.seed ?? 0, 0, terminals);
+  const ctx = { shapes: 0, deadline: performance.now() + MAX_MS };
+  apply(typeDef.rules, typeDef.axiom, root, params, params.seed ?? 0, 0, terminals, ctx);
   return { width: root.w, height: root.h, params, terminals };
 }
 
-function apply(rules, sym, shape, params, seed, depth, out) {
+function apply(rules, sym, shape, params, seed, depth, out, ctx) {
   if (depth > MAX_DEPTH) throw new Error(`depth limit (${MAX_DEPTH}) hit at ${shape.path} (${sym})`);
-  const list = rules[sym];
-  if (!list) throw new Error(`no rules for symbol "${sym}" at ${shape.path}`);
+  if (++ctx.shapes > MAX_SHAPES) throw new Error(`shape limit (${MAX_SHAPES}) hit at ${shape.path} (${sym}): a rule creates too many shapes`);
+  if ((ctx.shapes & 255) === 0 && performance.now() > ctx.deadline) throw new Error(`generation took longer than ${MAX_MS} ms at ${shape.path} (${sym})`);
+  const list = Object.hasOwn(rules, sym) ? rules[sym] : undefined;
+  if (!Array.isArray(list)) throw new Error(`no rules for symbol "${sym}" at ${shape.path}`);
 
   const rand = mulberry32(hashSeed(seed, shape.path));
   const scope = {
@@ -47,7 +58,7 @@ function apply(rules, sym, shape, params, seed, depth, out) {
   const rule = list.find((r) => r.when === undefined || ev(r.when));
   if (!rule) return; // no rule matched: nothing is produced
 
-  const next = (child, s) => apply(rules, s, child, params, seed, depth + 1, out);
+  const next = (child, s) => apply(rules, s, child, params, seed, depth + 1, out, ctx);
   const isX = rule.axis === "x";
   const child = (start, len, i, n) => ({
     x: isX ? start : shape.x,
@@ -74,7 +85,7 @@ function apply(rules, sym, shape, params, seed, depth, out) {
     case "repeat": {
       const len = isX ? shape.w : shape.h;
       const size = ev(rule.size);
-      if (!(size > EPS)) throw new Error(`repeat size must be > 0 at ${shape.path}`);
+      if (!Number.isFinite(size) || size < MIN_TILE) throw new Error(`repeat size must be a number of at least ${MIN_TILE} m at ${shape.path}, got ${size}`);
       const n = Math.max(1, Math.floor(len / size + 1e-9)); // +1e-9: 25.2/3.6 must give 7, not 6
       const tile = len / n;
       const pattern = rule.pattern === undefined ? null : String(ev(rule.pattern));
@@ -88,7 +99,12 @@ function apply(rules, sym, shape, params, seed, depth, out) {
     }
 
     case "inset": {
-      const m = (e) => (e === undefined ? 0 : Math.max(0, ev(e)));
+      const m = (e) => {
+        if (e === undefined) return 0;
+        const v = ev(e);
+        if (!Number.isFinite(v)) throw new Error(`inset margin must be a finite number at ${shape.path}, got ${v}`);
+        return Math.max(0, v);
+      };
       const [l, r] = fit(m(rule.l), m(rule.r), shape.w);
       const [b, t] = fit(m(rule.b), m(rule.t), shape.h);
       const piece = (x, y, w, h, i) => ({ x, y, w, h, index: i, count: 5, path: `${shape.path}.${i}` });
@@ -109,6 +125,7 @@ function apply(rules, sym, shape, params, seed, depth, out) {
       const d = rule.depth === undefined ? 0.05 : ev(rule.depth);
       const z = rule.offset === undefined ? 0 : ev(rule.offset);
       if (!Number.isFinite(d) || d <= 0 || !Number.isFinite(z)) throw new Error(`bad depth/offset at ${shape.path}`);
+      if (out.length >= MAX_TERMINALS) throw new Error(`terminal limit (${MAX_TERMINALS}) hit at ${shape.path}`);
       out.push({ x: shape.x, y: shape.y, z, w: shape.w, h: shape.h, d, mat: rule.mat, role: rule.role, path: shape.path });
       return;
     }

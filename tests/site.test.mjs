@@ -68,3 +68,15 @@ test("a blocked or failed module load shows a Korean notice instead of a blank p
   assert.match(html, /id="load-error"[^>]*hidden/);
   assert.match(app, /document\.documentElement\.dataset\.ready\s*=\s*"1"/);
 });
+
+test("the visible status chip is not a live region; a separate screen-reader-only region announces changes after a pause", () => {
+  assert.doesNotMatch(html, /id="status"[^>]*role="status"/);
+  assert.match(html, /id="announce"[^>]*role="status"/);
+  assert.match(app, /clearTimeout\(announceTimer\)/);
+});
+
+test("forced-colors mode keeps the pressed state visible without relying on color alone", () => {
+  const css = readFileSync(new URL("studio/studio.css", WEB), "utf8");
+  assert.match(css, /@media \(forced-colors: active\)/);
+  assert.match(css, /forced-colors[\s\S]*aria-pressed="true"[\s\S]*(outline|border)/);
+});

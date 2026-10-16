@@ -7,7 +7,13 @@ import { MATERIAL_CATALOG, DEFAULT_FINISH } from "./view/catalog.js";
 import { loadPreset, randomize } from "./state.js";
 
 const $ = (selector) => document.querySelector(selector);
-const setStatus = (text) => ($("#status").textContent = text);
+let announceTimer;
+const setStatus = (text) => {
+  $("#status").textContent = text;
+  // The chip changes on every frame while a slider is dragged; tell screen readers only once the changes pause.
+  clearTimeout(announceTimer);
+  announceTimer = setTimeout(() => ($("#announce").textContent = text), 700);
+};
 const FINISH_SLOTS = [
   ["primary", "주 마감재"],
   ["secondary", "보조 마감재"],

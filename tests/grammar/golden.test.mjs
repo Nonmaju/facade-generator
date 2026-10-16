@@ -29,9 +29,10 @@ function snapshot() {
 
 test("presets match the golden snapshot", () => {
   const now = snapshot();
-  if (process.env.UPDATE_GOLDEN || !existsSync(FILE)) {
+  if (process.env.UPDATE_GOLDEN) {
     writeFileSync(FILE, JSON.stringify(now, null, 2) + "\n");
     return;
   }
+  assert.ok(existsSync(FILE), "golden.json is missing: run with UPDATE_GOLDEN=1 once and commit it (a missing snapshot must not pass silently)");
   assert.deepEqual(now, JSON.parse(readFileSync(FILE, "utf8")));
 });

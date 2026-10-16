@@ -1,5 +1,7 @@
 // Safe expression parser/evaluator for facade rules.
 // Hand-written on purpose: rule sets will eventually hold user-typed text, so no eval / new Function.
+const MAX_LEN = 256;
+const MAX_NEST = 32;
 const FORBIDDEN = new Set(["__proto__", "constructor", "prototype"]);
 const BUILTINS = {
   min: Math.min,
@@ -32,6 +34,10 @@ function tokenize(src) {
 function parse(src) {
   const toks = tokenize(src);
   let i = 0;
+  let nest = 0; // parser recursion depth: input like "((((..." must not overflow the stack
+  const enter = () => {
+    if (++nest > MAX_NEST) throw new Error(`expression too deep (more than ${MAX_NEST} levels) in "${src.slice(0, 40)}"`);
+  };
   const isOp = (v) => toks[i]?.k === "op" && toks[i].v === v;
   const expect = (v) => {
     if (!isOp(v)) throw new Error(`expected "${v}" in "${src}"`);
@@ -39,12 +45,17 @@ function parse(src) {
   };
 
   function ternary() {
+    enter();
     const c = binary(1);
-    if (!isOp("?")) return c;
+    if (!isOp("?")) {
+      nest--;
+      return c;
+    }
     i++;
     const a = ternary();
     expect(":");
     const b = ternary();
+    nest--;
     return { t: "cond", c, a, b };
   }
   function binary(minPrec) {
@@ -59,11 +70,16 @@ function parse(src) {
     }
   }
   function unary() {
+    enter();
+    let node;
     if (isOp("!") || isOp("-")) {
       const op = toks[i++].v;
-      return { t: "un", op, a: unary() };
+      node = { t: "un", op, a: unary() };
+    } else {
+      node = primary();
     }
-    return primary();
+    nest--;
+    return node;
   }
   function primary() {
     const tk = toks[i++];
@@ -133,6 +149,7 @@ const cache = new Map();
 
 /** Parse + check an expression string once; throws a readable Error if it is invalid. */
 export function compile(src) {
+  if (typeof src === "string" && src.length > MAX_LEN) throw new Error(`expression too long (${src.length} characters, the limit is ${MAX_LEN})`);
   let ast = cache.get(src);
   if (!ast) {
     ast = parse(src);

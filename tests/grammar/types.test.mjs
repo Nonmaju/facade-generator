@@ -56,10 +56,15 @@ for (const id of typeIds()) {
     const biggest = Object.fromEntries(def.params.filter((p) => p.max !== undefined).map((p) => [p.key, p.max]));
     biggest.rhythm = "random";
     generate(def, biggest); // warm-up: parses and caches expressions
-    const t0 = performance.now();
-    const r = generate(def, biggest);
-    const ms = performance.now() - t0;
-    assert.ok(ms < 50, `${id} took ${ms.toFixed(1)} ms for ${r.terminals.length} terminals`);
+    const runs = [];
+    let r;
+    for (let i = 0; i < 5; i++) {
+      const t0 = performance.now();
+      r = generate(def, biggest);
+      runs.push(performance.now() - t0);
+    }
+    const ms = runs.sort((a, b) => a - b)[2]; // median of 5: one slow run on a busy machine must not fail the test
+    assert.ok(ms < 50, `${id} median ${ms.toFixed(1)} ms for ${r.terminals.length} terminals`);
   });
 
   test(`${id}: changing floors keeps the ground floor's paths and geometry`, () => {
