@@ -6,6 +6,11 @@
   <title>파사드 스튜디오</title>
   <meta name="theme-color" content="#0e1114">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nonmaju.github.io/facade-studio/">
+  <meta property="og:image" content="https://nonmaju.github.io/facade-studio/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
   <meta property="og:title" content="파사드 스튜디오">
   <meta property="og:description" content="파라미터로 건물 파사드를 만들고 재질을 실시간으로 바꿔보는 브라우저 스튜디오. GPU 없이 브라우저에서만 동작합니다.">
   <meta name="description" content="파라미터로 건물 파사드를 만들고 재질을 실시간으로 바꿔보는 브라우저 스튜디오. GPU 없이 브라우저에서만 동작합니다.">
@@ -16,8 +21,8 @@
   <link rel="stylesheet" href="studio/studio.css">
   <script type="importmap">
     { "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        "three": "./vendor/three/three.module.min.js",
+        "three/addons/": "./vendor/three/addons/"
     } }
   </script>
 </head>
@@ -28,7 +33,7 @@
         <svg width="24" height="24" viewBox="0 0 28 28" aria-hidden="true"><rect x="2" y="2" width="24" height="24" rx="5" fill="#EDEFF1"/><g fill="#15181B"><rect x="6" y="6" width="5" height="5" rx="1"/><rect x="12" y="6" width="5" height="5" rx="1"/><rect x="18" y="6" width="5" height="5" rx="1"/><rect x="6" y="12" width="5" height="5" rx="1"/><rect x="12" y="12" width="5" height="5" rx="1"/><rect x="18" y="12" width="5" height="5" rx="1"/><rect x="6" y="18" width="5" height="5" rx="1"/><rect x="12" y="18" width="5" height="5" rx="1"/></g><rect x="18" y="18" width="5" height="5" rx="1" fill="#FF6A3D"/></svg>
         <h1>파사드 스튜디오</h1>
       </div>
-      <a class="link" href="https://github.com/Nonmaju/facade-generator#readme" target="_blank" rel="noopener">프로젝트 이야기</a>
+      <a class="link" href="https://github.com/Nonmaju/facade-studio#readme" target="_blank" rel="noopener">프로젝트 이야기</a>
     </div>
     <div class="bar-actions">
     <button id="edit-toggle" class="btn-ghost" type="button" aria-expanded="false" aria-controls="editor">규칙 편집</button>
@@ -81,7 +86,7 @@
 
   <p id="fallback" class="notice" role="alert" hidden>이 브라우저에서는 WebGL을 사용할 수 없어 3D 미리보기를 표시할 수 없습니다. 다른 브라우저에서 열어보세요.</p>
 
-  <p id="load-error" class="notice" role="alert" hidden>화면을 불러오지 못했습니다. 인터넷 연결을 확인하고 새로고침해 보세요. (3D 라이브러리를 외부 서버에서 받아옵니다.)</p>
+  <p id="load-error" class="notice" role="alert" hidden>화면을 불러오지 못했습니다. 새로고침해 보세요. 계속 안 되면 브라우저를 최신 버전으로 업데이트하거나 다른 브라우저에서 열어보세요.</p>
 
   <script type="module" src="studio/app.js"></script>
   <script>

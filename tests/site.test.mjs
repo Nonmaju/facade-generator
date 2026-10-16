@@ -7,10 +7,10 @@ const WEB = new URL("../web/", import.meta.url);
 const html = readFileSync(new URL("index.html", WEB), "utf8");
 const app = readFileSync(new URL("studio/app.js", WEB), "utf8");
 
-test("index.html is the Korean studio page with a pinned Three.js", () => {
+test("index.html is the Korean studio page with a pinned Three.js served from this repo", () => {
   assert.match(html, /<html lang="ko">/);
   assert.match(html, /<title>파사드 스튜디오<\/title>/);
-  assert.match(html, /three@0\.160\.0\/build\/three\.module\.js/);
+  assert.match(html, /"three": "\.\/vendor\/three\/three\.module\.min\.js"/);
   assert.equal((html.match(/<canvas\b/g) ?? []).length, 1);
 });
 
