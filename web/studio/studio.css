@@ -39,6 +39,10 @@ button { font-family: inherit; }
 .side { display: contents; }
 .card { position: fixed; z-index: 2; border-radius: 16px; color: var(--ink); }
 .params { right: 24px; top: 84px; width: 300px; max-height: calc(100vh - 210px); overflow: auto; padding: 16px 18px 18px; }
+.card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.card-head h2 { margin: 0 !important; }
+.card-close { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; }
+.card-close:hover { background: rgba(255, 255, 255, 0.1); color: var(--ink); }
 .params h2 { margin: 0 0 12px; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.04em; }
 #controls { display: flex; flex-direction: column; gap: 12px; }
 .param { display: block; }
@@ -118,7 +122,7 @@ button { font-family: inherit; }
 .bar-actions { display: flex; align-items: center; gap: 10px; }
 .editor { right: 24px; top: 84px; bottom: 100px; width: 480px; max-width: calc(100vw - 48px); padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; z-index: 3; }
 .editor[hidden] { display: none; }
-body.editor-open .params { display: none; }
+body.editor-open .params, body.controls-hidden .params { display: none; }
 .editor-head { display: flex; justify-content: space-between; align-items: baseline; }
 .editor-head h2 { margin: 0; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.04em; }
 .editor-status { font-size: 12px; font-weight: 700; color: var(--soft); }
