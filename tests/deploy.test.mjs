@@ -78,3 +78,41 @@ test("the renderer is sharp on high-DPI screens: pixel ratio is set, capped at 2
   const resize = scene.match(/function resize\(\)\s*\{[\s\S]*?\n  \}/)[0];
   assert.match(resize, /setPixelRatio/);
 });
+
+test("three.js is served from this repo (pinned 160, MIT notice kept), not from a CDN", () => {
+  const html = readFileSync(new URL("index.html", WEB), "utf8");
+  const map = JSON.parse(html.match(/<script type="importmap">([\s\S]*?)<\/script>/)[1]).imports;
+  assert.equal(map.three, "./vendor/three/three.module.min.js");
+  assert.equal(map["three/addons/"], "./vendor/three/addons/");
+  for (const f of ["vendor/three/three.module.min.js", "vendor/three/addons/controls/OrbitControls.js", "vendor/three/addons/environments/RoomEnvironment.js", "vendor/three/LICENSE"]) assert.ok(exists(f), f);
+  assert.match(readFileSync(new URL("vendor/three/three.module.min.js", WEB), "utf8").slice(0, 400), /const t="160"/);
+  assert.match(readFileSync(new URL("vendor/three/LICENSE", WEB), "utf8"), /MIT License/);
+  assert.doesNotMatch(html, /cdn\.jsdelivr\.net/, "only Google Fonts may remain as an external dependency");
+  for (const f of tracked) if (/^web\/studio\/.*\.js$/.test(f)) assert.doesNotMatch(readFileSync(new URL("../" + f, WEB), "utf8"), /cdn\.jsdelivr\.net/, f);
+});
+
+test("the repo has an MIT LICENSE with a named holder, and package.json says MIT", () => {
+  const root = new URL("../", import.meta.url);
+  const text = readFileSync(new URL("LICENSE", root), "utf8");
+  assert.match(text, /^MIT License/);
+  assert.match(text, /Copyright \(c\) 2026 \S+/);
+  assert.equal(JSON.parse(readFileSync(new URL("package.json", root), "utf8")).license, "MIT");
+});
+
+test("the sharing image and address are absolute and point at the final site name", () => {
+  const html = readFileSync(new URL("index.html", WEB), "utf8");
+  assert.match(html, /property="og:url" content="https:\/\/nonmaju\.github\.io\/facade-studio\/"/);
+  assert.match(html, /property="og:image" content="https:\/\/nonmaju\.github\.io\/facade-studio\/og\.png"/);
+  assert.match(html, /name="twitter:card" content="summary_large_image"/);
+  assert.ok(exists("og.png"));
+  const png = readFileSync(new URL("og.png", WEB));
+  assert.deepEqual([...png.subarray(0, 4)], [0x89, 0x50, 0x4e, 0x47]);
+  assert.equal(png.readUInt32BE(16), 1200);
+  assert.equal(png.readUInt32BE(20), 630);
+});
+
+test("the old repo name does not appear in the docs, scripts or page links", () => {
+  const root = new URL("../", import.meta.url);
+  const files = ["README.md", "package.json", "CLAUDE.md", "web/index.html"];
+  for (const f of files) assert.doesNotMatch(readFileSync(new URL(f, root), "utf8"), /facade-generator/, `${f} still names the old repo`);
+});
