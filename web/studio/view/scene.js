@@ -17,6 +17,7 @@ export function createScene(canvas) {
   } catch {
     return null;
   }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -73,6 +74,7 @@ export function createScene(canvas) {
     const w = canvas.clientWidth;
     const h = canvas.clientHeight;
     if (!w || !h) return;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); // sharp on phones and retina, but never more than 2x
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
