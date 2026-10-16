@@ -4,7 +4,9 @@
 
 ![스튜디오 화면](docs/images/studio.png)
 
-**상태:** 로컬에서 실행할 수 있습니다. 아직 배포하지 않았습니다.
+**바로 써보기:** https://nonmaju.github.io/facade-studio/
+
+**상태:** 배포되어 있습니다. `main`에 머지하면 테스트를 거쳐 자동으로 배포됩니다(GitHub Pages).
 
 ## 해보기
 

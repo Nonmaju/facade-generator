@@ -1,7 +1,7 @@
 # facade-studio: parametric facade studio (renamed from the first project, a sketch-to-render gallery)
 
 ## Handoff
-- Existing (done, public repo, not deployed): the SDXL+ControlNet gallery and Kaggle server were deleted on 2026-10-14 (recover from commit 9c15fb3); only the images (web/samples) and spike/ remain. See README.md and the old design docs under docs/superpowers/.
+- Existing (done, public repo, live at https://nonmaju.github.io/facade-studio/ via GitHub Pages; every push to main deploys after the tests pass): the SDXL+ControlNet gallery and Kaggle server were deleted on 2026-10-14 (recover from commit 9c15fb3); only the images (web/samples) and spike/ remain. See README.md and the old design docs under docs/superpowers/.
 - New direction (user decision): turn this repo into a **parametric facade studio** (brainstorm item 2): procedural facade from parameters (floors, window ratio, rhythm) via a shape grammar, real-time PBR material swapping in Three.js. No gallery tab (user decision 2026-10-13): the old SDXL results appear as a few images in the README, which tells the "GPU constraint -> CPU/browser pivot" story. Optional: sketch input via OpenCV.js line detection snapped to a grid.
 - Brainstorm caveats (Opus inference, unmeasured): difficulty ~3/5, 3-5 weeks; output is Three.js quality, not photoreal; do not try diffusion in the browser.
 

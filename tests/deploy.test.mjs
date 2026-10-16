@@ -48,16 +48,26 @@ test("the page uses only relative URLs for its own files, so it works under /<re
   assert.doesNotMatch(readFileSync(new URL("studio/app.js", WEB), "utf8"), /fetch\(["'`]\//);
 });
 
-test("the Pages workflow can only be started by hand until the user enables Pages, and never switches Pages on by itself", () => {
+test("the Pages workflow deploys on pushes to main (and by hand), runs the tests first, and never switches Pages on or runs on PRs", () => {
   const path = new URL("../.github/workflows/pages.yml", import.meta.url);
   assert.ok(existsSync(path));
   const yml = readFileSync(path, "utf8").split("\n").filter((l) => !l.trim().startsWith("#")).join("\n"); // comments may mention the forbidden options
   assert.match(yml, /workflow_dispatch:/);
-  assert.doesNotMatch(yml, /^\s*(push|pull_request|schedule):/m, "add the push trigger only after the user enables Pages and a manual run is green");
+  assert.match(yml, /push:\s*\n\s*branches:\s*\[main\]/);
+  assert.doesNotMatch(yml, /^\s*(pull_request|schedule):/m, "a PR or a timer must never deploy");
   assert.doesNotMatch(yml, /enablement/);
-  assert.match(yml, /path:\s*web\b/);
+  assert.ok(yml.indexOf("npm test") < yml.indexOf("deploy-pages"), "tests must run before the deploy step");
+  assert.match(yml, /path:\s*web$/m);
   assert.match(yml, /pages:\s*write/);
   assert.match(yml, /id-token:\s*write/);
+});
+
+test("README and CLAUDE.md say the site is live at its address, and no longer say it is not deployed", () => {
+  const root = new URL("../", import.meta.url);
+  const readme = readFileSync(new URL("README.md", root), "utf8");
+  assert.match(readme, /https:\/\/nonmaju\.github\.io\/facade-studio\//);
+  assert.doesNotMatch(readme, /아직 배포하지 않았습니다/);
+  assert.doesNotMatch(readFileSync(new URL("CLAUDE.md", root), "utf8"), /not deployed/);
 });
 
 test("the CI workflow runs the tests on pull requests", () => {
