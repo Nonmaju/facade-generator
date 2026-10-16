@@ -100,3 +100,15 @@ test("the header editor button has its own readable (dark glass) style, and an o
   assert.match(readFileSync(new URL("studio/view/editor-panel.js", WEB), "utf8"), /onToggle/);
   assert.match(app, /onToggle:\s*\(\)\s*=>\s*schedule\(true\)/);
 });
+
+test("the controls card can be closed and reopened: a close button in the card, a header toggle, and a body class that hides only the card", () => {
+  for (const id of ["controls-toggle", "params-close", "params-card"]) assert.match(html, new RegExp(`id="${id}"`), `index.html has no #${id}`);
+  for (const id of ["controls-toggle", "params-close"]) assert.match(app, new RegExp(`#${id}`), `app.js never looks up #${id}`); // params-card is only the aria-controls target
+  const toggleTag = html.match(/<button id="controls-toggle"[^>]*>/)[0]; // attribute order does not matter
+  assert.match(toggleTag, /aria-controls="params-card"/);
+  assert.match(toggleTag, /aria-expanded="true"/);
+  assert.match(html, /id="params-close"[^>]*aria-label="[^"]+"/);
+  assert.match(app, /classList\.toggle\("controls-hidden"/);
+  const css = readFileSync(new URL("studio/studio.css", WEB), "utf8");
+  assert.match(css, /body\.controls-hidden \.params\s*\{[^}]*display:\s*none/);
+});
