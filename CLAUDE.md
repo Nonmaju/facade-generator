@@ -1,4 +1,4 @@
-# facade-generator -> parametric facade studio (pivot)
+# facade-studio: parametric facade studio (renamed from the first project, a sketch-to-render gallery)
 
 ## Handoff
 - Existing (done, public repo, not deployed): the SDXL+ControlNet gallery and Kaggle server were deleted on 2026-10-14 (recover from commit 9c15fb3); only the images (web/samples) and spike/ remain. See README.md and the old design docs under docs/superpowers/.
