@@ -1,9 +1,11 @@
 # Deploys the web/ folder to GitHub Pages.
-# Manual only on purpose: enabling Pages and the first deploy are the owner's decision (Settings -> Pages -> Source: "GitHub Actions").
-# After the owner enabled Pages and one manual run is green, add "push: branches: [main]" under "on:" if every merge should deploy.
+# Every push to main deploys (the owner asked for this once the first manual run succeeded, 2026-10-16); it can also be started by hand.
+# The tests run first, so a red test blocks the deploy. Pull requests and timers never deploy.
 # Do NOT add "enablement: true" to configure-pages: that would switch Pages on by itself.
 name: pages
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
