@@ -12,7 +12,7 @@
 python -m http.server 8000 -d web
 ```
 
-http://localhost:8000 을 엽니다. 3D 라이브러리(Three.js)와 글꼴을 CDN에서 불러오므로 인터넷이 필요합니다.
+http://localhost:8000 을 엽니다. Three.js는 저장소에 들어 있어(`web/vendor/three/`) 따로 받을 필요가 없습니다. 글꼴(Noto Sans KR, IBM Plex Mono)만 Google Fonts에서 불러오며, 못 불러와도 기본 글꼴로 동작합니다.
 
 - 아래 독에서 파사드 유형(`그리드 창`, `커튼월`, `루버 / 조적`)과 프리셋을 고릅니다.
 - 오른쪽 카드에서 층수, 베이 수, 창 비율, 층고는 슬라이더로, 리듬은 버튼으로 바꿉니다.
@@ -68,6 +68,8 @@ Node 24에서 실행해 확인했습니다 (`node --test`를 지원하는 최근
 처음에는 이 이미지들을 보여주는 갤러리 페이지와, 직접 올린 스케치를 Kaggle GPU에서 렌더하는 서버(`server/kaggle_server.py`, 실제로 돌려보지는 못했습니다)도 만들었습니다. 스튜디오로 방향을 바꾸면서 그 코드는 지웠고, 이미지(`web/samples/`)와 실험 기록(`spike/`)만 남겼습니다. 지운 코드는 git 기록에 있습니다: `git show 9c15fb3:web/app.js` 처럼 커밋 `9c15fb3`에서 꺼낼 수 있습니다.
 
 ## 크레딧
+
+3D 라이브러리: [three.js](https://threejs.org) r160 (MIT, `web/vendor/three/LICENSE`). 이 프로젝트의 코드는 [MIT 라이선스](LICENSE)입니다.
 
 텍스처는 모두 [ambientCG](https://ambientcg.com)의 CC0 자료입니다.
 
