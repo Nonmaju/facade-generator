@@ -194,20 +194,16 @@ async function main() {
     },
   });
 
-  // Close / reopen the parameter card so the facade can be looked at without it (two buttons, one state).
-  const controlsToggle = $("#controls-toggle");
-  function setControlsHidden(hide) {
-    document.body.classList.toggle("controls-hidden", hide);
-    controlsToggle.setAttribute("aria-expanded", String(!hide));
-    controlsToggle.textContent = hide ? "컨트롤 보기" : "컨트롤 숨기기";
-    announce(hide ? "컨트롤을 숨겼습니다" : "컨트롤을 표시했습니다");
-    if (!hide) $("#params-close").focus({ preventScroll: true });
+  // Fold / unfold the parameter and finishes cards: a folded card shows only its title row.
+  for (const name of ["params", "finishes"]) {
+    const toggle = $(`#${name}-toggle`);
+    const body = $(`#${name}-body`);
+    toggle.addEventListener("click", () => {
+      const open = toggle.getAttribute("aria-expanded") !== "true";
+      toggle.setAttribute("aria-expanded", String(open));
+      body.hidden = !open;
+    });
   }
-  controlsToggle.addEventListener("click", () => setControlsHidden(!document.body.classList.contains("controls-hidden")));
-  $("#params-close").addEventListener("click", () => {
-    setControlsHidden(true);
-    controlsToggle.focus();
-  });
 
   $("#random").addEventListener("click", () => {
     activePreset = -1;
