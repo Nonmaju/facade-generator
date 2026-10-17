@@ -101,14 +101,24 @@ test("the header editor button has its own readable (dark glass) style, and an o
   assert.match(app, /onToggle:\s*\(\)\s*=>\s*schedule\(true\)/);
 });
 
-test("the controls card can be closed and reopened: a close button in the card, a header toggle, and a body class that hides only the card", () => {
-  for (const id of ["controls-toggle", "params-close", "params-card"]) assert.match(html, new RegExp(`id="${id}"`), `index.html has no #${id}`);
-  for (const id of ["controls-toggle", "params-close"]) assert.match(app, new RegExp(`#${id}`), `app.js never looks up #${id}`); // params-card is only the aria-controls target
-  const toggleTag = html.match(/<button id="controls-toggle"[^>]*>/)[0]; // attribute order does not matter
-  assert.match(toggleTag, /aria-controls="params-card"/);
-  assert.match(toggleTag, /aria-expanded="true"/);
-  assert.match(html, /id="params-close"[^>]*aria-label="[^"]+"/);
-  assert.match(app, /classList\.toggle\("controls-hidden"/);
+test("the parameter card and the finishes card each fold: a header button with aria-expanded and aria-controls, a body that is hidden when folded, a rotating chevron", () => {
+  for (const [name, title] of [["params", "파라미터"], ["finishes", "재질"]]) {
+    const tag = html.match(new RegExp(`<button id="${name}-toggle"[^>]*>`))?.[0];
+    assert.ok(tag, `index.html has no #${name}-toggle button`);
+    assert.match(tag, /aria-expanded="true"/);
+    assert.match(tag, new RegExp(`aria-controls="${name}-body"`));
+    assert.match(html, new RegExp(`id="${name}-body"`));
+    assert.match(html, new RegExp(`id="${name}-toggle"[^>]*>\\s*<span>${title}</span>`), `the header button shows "${title}"`);
+  }
+  assert.match(app, /for \(const name of \["params", "finishes"\]\)/);
+  assert.match(app, /\$\(`#\$\{name\}-toggle`\)/);
+  assert.match(app, /body\.hidden\s*=\s*!open/);
   const css = readFileSync(new URL("studio/studio.css", WEB), "utf8");
-  assert.match(css, /body\.controls-hidden \.params\s*\{[^}]*display:\s*none/);
+  assert.match(css, /\.card-toggle\[aria-expanded="false"\] svg\s*\{[^}]*rotate/);
+});
+
+test("the earlier close button and header hide-toggle are gone", () => {
+  for (const id of ["params-close", "controls-toggle"]) assert.doesNotMatch(html, new RegExp(`id="${id}"`));
+  assert.doesNotMatch(app, /controls-hidden|setControlsHidden/);
+  assert.doesNotMatch(readFileSync(new URL("studio/studio.css", WEB), "utf8"), /controls-hidden|card-close/);
 });

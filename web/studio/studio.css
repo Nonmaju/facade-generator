@@ -39,11 +39,13 @@ button { font-family: inherit; }
 .side { display: contents; }
 .card { position: fixed; z-index: 2; border-radius: 16px; color: var(--ink); }
 .params { right: 24px; top: 84px; width: 300px; max-height: calc(100vh - 210px); overflow: auto; padding: 16px 18px 18px; }
-.card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.card-head h2 { margin: 0 !important; }
-.card-close { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; }
-.card-close:hover { background: rgba(255, 255, 255, 0.1); color: var(--ink); }
-.params h2 { margin: 0 0 12px; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.04em; }
+.params h2, .finishes h2 { margin: 0; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.04em; }
+.card-toggle { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; letter-spacing: inherit; cursor: pointer; }
+.card-toggle:hover { color: var(--ink); }
+.card-toggle svg { transition: transform 0.15s; }
+.card-toggle[aria-expanded="false"] svg { transform: rotate(-90deg); }
+#params-body, #finishes-body { margin-top: 12px; }
+#params-body[hidden], #finishes-body[hidden] { display: none; }
 #controls { display: flex; flex-direction: column; gap: 12px; }
 .param { display: block; }
 .param-head { display: flex; justify-content: space-between; font-weight: 500; }
@@ -57,7 +59,8 @@ button { font-family: inherit; }
 .seg-btn { flex: 1; border: 0; padding: 6px 0; border-radius: 8px; background: transparent; color: var(--soft); font: 500 13px var(--font); cursor: pointer; }
 .seg-btn[aria-pressed="true"] { background: var(--ink); color: var(--on-accent); font-weight: 700; }
 
-.finishes { left: 24px; bottom: 24px; width: 312px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.finishes { left: 24px; bottom: 24px; width: 312px; padding: 14px 16px; }
+#finishes-body { display: flex; flex-direction: column; gap: 12px; }
 .finish-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
 .finish-title { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.04em; }
 .finish-name { font-size: 13px; font-weight: 500; }
@@ -122,7 +125,7 @@ button { font-family: inherit; }
 .bar-actions { display: flex; align-items: center; gap: 10px; }
 .editor { right: 24px; top: 84px; bottom: 100px; width: 480px; max-width: calc(100vw - 48px); padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; z-index: 3; }
 .editor[hidden] { display: none; }
-body.editor-open .params, body.controls-hidden .params { display: none; }
+body.editor-open .params { display: none; }
 .editor-head { display: flex; justify-content: space-between; align-items: baseline; }
 .editor-head h2 { margin: 0; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.04em; }
 .editor-status { font-size: 12px; font-weight: 700; color: var(--soft); }

@@ -36,7 +36,6 @@
       <a class="link" href="https://github.com/Nonmaju/facade-studio#readme" target="_blank" rel="noopener">프로젝트 이야기</a>
     </div>
     <div class="bar-actions">
-    <button id="controls-toggle" class="btn-ghost" type="button" aria-expanded="true" aria-controls="params-card">컨트롤 숨기기</button>
     <button id="edit-toggle" class="btn-ghost" type="button" aria-expanded="false" aria-controls="editor">규칙 편집</button>
     <button id="shot" class="btn-accent" type="button">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>
@@ -76,17 +75,25 @@
 
   <div class="side">
     <section id="params-card" class="card params" aria-labelledby="params-title">
-      <div class="card-head">
-        <h2 id="params-title">파라미터</h2>
-        <button id="params-close" class="card-close" type="button" aria-label="컨트롤 닫기">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      <h2 id="params-title">
+        <button id="params-toggle" class="card-toggle" type="button" aria-expanded="true" aria-controls="params-body">
+          <span>파라미터</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
         </button>
-      </div>
-      <div id="controls"></div>
+      </h2>
+      <div id="params-body"><div id="controls"></div></div>
     </section>
-    <section class="card finishes" aria-label="재질">
-      <div id="finish-primary" class="finish"></div>
-      <div id="finish-secondary" class="finish"></div>
+    <section id="finishes-card" class="card finishes" aria-labelledby="finishes-title">
+      <h2 id="finishes-title">
+        <button id="finishes-toggle" class="card-toggle" type="button" aria-expanded="true" aria-controls="finishes-body">
+          <span>재질</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </h2>
+      <div id="finishes-body">
+        <div id="finish-primary" class="finish"></div>
+        <div id="finish-secondary" class="finish"></div>
+      </div>
     </section>
   </div>
 
