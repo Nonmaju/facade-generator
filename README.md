@@ -17,8 +17,9 @@ python -m http.server 8000 -d web
 http://localhost:8000 을 엽니다. Three.js는 저장소에 들어 있어(`web/vendor/three/`) 따로 받을 필요가 없습니다. 글꼴(Noto Sans KR, IBM Plex Mono)만 Google Fonts에서 불러오며, 못 불러와도 기본 글꼴로 동작합니다.
 
 - 아래 독에서 파사드 유형(`그리드 창`, `커튼월`, `루버 / 조적`)과 프리셋을 고릅니다.
-- 오른쪽 카드에서 층수, 베이 수, 창 비율, 층고는 슬라이더로, 리듬은 버튼으로 바꿉니다.
-- 재질 카드에서 주 마감재와 보조 마감재를 바꿉니다. 넓은 화면에서는 왼쪽 아래에, 좁은 화면에서는 오른쪽 열에 있습니다. 6종 모두 실제 PBR 텍스처입니다.
+- 오른쪽 `파라미터` 카드에서 층수, 베이 수, 창 비율, 층고는 슬라이더로, 리듬은 버튼으로 바꿉니다.
+- `재질` 카드에서 주 마감재와 보조 마감재를 바꿉니다. 넓은 화면에서는 왼쪽 아래에, 좁은 화면에서는 오른쪽 열에 있습니다. 6종 모두 실제 PBR 텍스처입니다.
+- 두 카드는 제목 줄의 화살표로 접고 펼 수 있습니다. 접으면 제목만 남아서 파사드를 더 넓게 볼 수 있습니다.
 - `랜덤`은 리듬을 `랜덤`으로 바꾸고 새 시드를 뽑습니다. 시드 슬라이더는 그때만 나타납니다.
 - `규칙 편집`을 누르면 지금 유형의 규칙(JSON)이 오른쪽에 열립니다. 고치면 바로 3D가 바뀌고, 잘못 쓰면 규칙 경로와 함께 오류가 나오며 화면은 마지막으로 유효했던 규칙을 유지합니다. 고친 내용은 이 브라우저에 저장되고 `원래대로`로 되돌릴 수 있습니다.
 - `PNG 저장`으로 지금 보는 화면을 저장합니다.
@@ -46,10 +47,10 @@ http://localhost:8000 을 엽니다. Three.js는 저장소에 들어 있어(`web
 web/
   index.html            스튜디오 페이지
   studio/
-    app.js state.js studio.css
+    app.js state.js editor.js studio.css
     grammar/            문법 엔진 (순수 JS): expr, rng, rhythm, engine, validate
     types/              grid.json curtainwall.json louver.json + index.json
-    view/               Three.js 장면, 재질, 컨트롤, 카메라 맞춤
+    view/               Three.js 장면, 재질, 컨트롤, 규칙 편집 패널, 카메라 맞춤
   textures/             ambientCG 1K 텍스처 6종 + 견본 썸네일
   samples/              예전 SDXL 결과 이미지 (README에서만 사용)
 spike/                  예전 ControlNet 실험 (노트북, 스케치)
